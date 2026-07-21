@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hangulpia — One script, every language</title>
+<meta name="description" content="Hangul is a designed, scientific writing system. Hangulpia is teaching it to carry every language, starting with the Hangul-Japanese IME.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔤</text></svg>">
+<style>
+  :root {
+    --bg: #fff1f6;
+    --surface: #ffffff;
+    --surface-2: #ffe4ee;
+    --ink: #4a2e3d;
+    --ink-soft: #4a2e3d99;
+    --accent: #ff6fa5;
+    --accent-soft: #ff6fa51f;
+    --accent2: #22b28c;
+    --accent2-soft: #22b28c1f;
+    --spark-a: #ff6fa5;
+    --spark-b: #22b28c;
+    --spark-c: #a06be0;
+    --line: rgba(74, 46, 61, 0.13);
+    --line-strong: rgba(74, 46, 61, 0.26);
+    --shadow-color: 255, 111, 165;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #241726;
+      --surface: #2f1d33;
+      --surface-2: #3a2440;
+      --ink: #fdeaf2;
+      --ink-soft: #fdeaf299;
+      --accent: #ff8fbb;
+      --accent-soft: #ff8fbb29;
+      --accent2: #4fe0bd;
+      --accent2-soft: #4fe0bd26;
+      --spark-a: #ff8fbb;
+      --spark-b: #4fe0bd;
+      --spark-c: #c3a2ff;
+      --line: rgba(253, 234, 242, 0.14);
+      --line-strong: rgba(253, 234, 242, 0.26);
+      --shadow-color: 255, 143, 187;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #241726; --surface: #2f1d33; --surface-2: #3a2440;
+    --ink: #fdeaf2; --ink-soft: #fdeaf299;
+    --accent: #ff8fbb; --accent-soft: #ff8fbb29;
+    --accent2: #4fe0bd; --accent2-soft: #4fe0bd26;
+    --spark-a: #ff8fbb; --spark-b: #4fe0bd; --spark-c: #c3a2ff;
+    --line: rgba(253, 234, 242, 0.14); --line-strong: rgba(253, 234, 242, 0.26);
+    --shadow-color: 255, 143, 187;
+    color-scheme: dark;
+  }
+  :root[data-theme="light"] {
+    --bg: #fff1f6; --surface: #ffffff; --surface-2: #ffe4ee;
+    --ink: #4a2e3d; --ink-soft: #4a2e3d99;
+    --accent: #ff6fa5; --accent-soft: #ff6fa51f;
+    --accent2: #22b28c; --accent2-soft: #22b28c1f;
+    --spark-a: #ff6fa5; --spark-b: #22b28c; --spark-c: #a06be0;
+    --line: rgba(74, 46, 61, 0.13); --line-strong: rgba(74, 46, 61, 0.26);
+    --shadow-color: 255, 111, 165;
+    color-scheme: light;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: "Apple SD Gothic Neo", "Pretendard Variable", "Noto Sans KR", "Malgun Gothic", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  .mono { font-family: ui-monospace, "SF Mono", "Menlo", "Consolas", monospace; letter-spacing: 0.09em; text-transform: uppercase; font-size: 0.72rem; }
+  a { color: inherit; }
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+
+  /* ---------- sparkle text / border ---------- */
+  @keyframes spark-pan { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+  .spark-text {
+    background: linear-gradient(100deg, var(--spark-a), var(--spark-b), var(--spark-c), var(--spark-a));
+    background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: spark-pan 7s linear infinite;
+  }
+  .spark-border {
+    position: relative;
+    background: linear-gradient(120deg, var(--spark-a), var(--spark-b), var(--spark-c), var(--spark-a));
+    background-size: 300% 300%; animation: spark-pan 6s linear infinite; padding: 2px; border-radius: 22px;
+  }
+  .spark-border > .spark-inner { background: var(--surface); height: 100%; border-radius: 20px; }
+  @media (prefers-reduced-motion: reduce) { .spark-text, .spark-border { animation: none; background-position: 0% 50%; } }
+
+  /* ---------- top bar ---------- */
+  .topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: linear-gradient(90deg, var(--spark-a), var(--spark-b), var(--spark-c)); opacity: 0.6; }
+  .topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 1rem clamp(1.25rem, 4vw, 3rem); max-width: 1180px; margin: 0 auto; gap: 1rem; }
+  .brand { display: flex; align-items: baseline; gap: 0.45rem; font-weight: 900; font-size: 1.08rem; letter-spacing: -0.01em; text-decoration: none; flex: none; }
+  .brand .dot { color: var(--accent); }
+  .brand small { font-family: ui-monospace, monospace; font-weight: 700; font-size: 0.64rem; color: var(--ink-soft); letter-spacing: 0.05em; }
+  .topbar-right { display: flex; align-items: center; gap: clamp(0.75rem, 2vw, 1.5rem); }
+  nav.primary { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.6rem); }
+  nav.primary a { text-decoration: none; font-size: 0.86rem; font-weight: 700; color: var(--ink-soft); transition: color .15s ease; }
+  nav.primary a:hover { color: var(--ink); }
+
+  .pill-switch { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px; gap: 2px; background: var(--surface); }
+  .pill-switch button {
+    border: none; background: transparent; color: var(--ink-soft); font-weight: 800; font-size: 0.72rem;
+    letter-spacing: 0.03em; padding: 0.32rem 0.7rem; border-radius: 999px; cursor: pointer; transition: all .18s ease;
+  }
+  .pill-switch button.active { background: var(--accent); color: #fff; box-shadow: 0 3px 10px -3px rgba(var(--shadow-color), 0.6); }
+  .theme-toggle {
+    border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
+    width: 2.1rem; height: 2.1rem; border-radius: 999px; cursor: pointer; font-size: 0.9rem; display: grid; place-items: center;
+  }
+
+  /* ---------- section scaffolding ---------- */
+  section { position: relative; padding-block: clamp(3.25rem, 8vw, 6rem); }
+  section + section { border-top: 1px dashed var(--line-strong); }
+  .grid-frame { display: grid; grid-template-columns: 130px 1fr; gap: clamp(1rem, 3vw, 2.5rem); }
+  @media (max-width: 760px) { .grid-frame { grid-template-columns: 1fr; } }
+  .track-label { font-family: ui-monospace, monospace; font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); padding-top: 0.35rem; }
+  .track-label b { display: block; font-size: 1.7rem; font-weight: 900; color: var(--accent); letter-spacing: -0.02em; margin-top: 0.15rem; }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; letter-spacing: -0.02em; font-weight: 900; }
+  .eyebrow { font-family: ui-monospace, monospace; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 1rem; display: inline-flex; align-items: center; gap: 0.5rem; }
+  .lede { max-width: 40em; font-size: 1.08rem; color: var(--ink-soft); margin-top: 1.25rem; line-height: 1.85; }
+
+  /* ---------- hero ---------- */
+  .hero { padding-top: clamp(3.5rem, 9vw, 6rem); overflow: hidden; }
+  .hero-inner { position: relative; min-height: clamp(440px, 62vh, 660px); display: flex; align-items: center; }
+  .glow-blob { position: absolute; border-radius: 50%; filter: blur(70px); z-index: 0; pointer-events: none; animation: float 11s ease-in-out infinite; }
+  .glow-blob.b1 { width: 420px; height: 420px; background: var(--accent); opacity: 0.22; top: -190px; left: -120px; }
+  .glow-blob.b2 { width: 380px; height: 380px; background: var(--accent2); opacity: 0.2; bottom: -190px; right: -90px; animation-delay: -4s; }
+  .glow-blob.b3 { width: 260px; height: 260px; background: var(--spark-c); opacity: 0.18; top: 45%; right: 22%; animation-delay: -7s; }
+  @keyframes float { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(18px,-22px); } }
+  @media (prefers-reduced-motion: reduce) { .glow-blob { animation: none; } }
+  #sparkleCanvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+  .hero-content { position: relative; z-index: 1; max-width: 800px; }
+  .hero h1 { font-size: clamp(2.6rem, 5.4vw + 1rem, 5.2rem); line-height: 1.06; }
+  .hero .lede { font-size: 1.2rem; max-width: 34em; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.4rem; }
+
+  .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 1.7rem; font-weight: 800; font-size: 0.95rem; text-decoration: none; border-radius: 999px; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease; border: none; cursor: pointer; }
+  .btn-primary { background: var(--accent); color: #fff; box-shadow: 0 10px 26px -8px rgba(var(--shadow-color), 0.7); }
+  .btn-primary:hover { transform: translateY(-2px) scale(1.03); }
+  .btn-ghost.spark-border { border-radius: 999px; }
+  .btn-ghost.spark-border .spark-inner { border-radius: 999px; padding: 0.9rem 1.7rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 0.95rem; color: var(--ink); transition: transform .18s cubic-bezier(.34,1.56,.64,1); }
+  .btn-ghost:hover .spark-inner { transform: translateY(-2px) scale(1.03); }
+
+  .status-line { margin-top: 3rem; display: flex; align-items: center; gap: 0.6rem; font-family: ui-monospace, monospace; font-size: 0.78rem; letter-spacing: 0.04em; color: var(--ink-soft); }
+  .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 2.2s infinite; flex: none; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 var(--accent-soft), 0 0 8px var(--accent); } 70% { box-shadow: 0 0 0 9px transparent, 0 0 8px var(--accent); } 100% { box-shadow: 0 0 0 0 transparent, 0 0 8px var(--accent); } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none; } }
+
+  /* ---------- mascot ---------- */
+  .mascot { position: absolute; z-index: 1; width: 84px; height: 84px; top: 4%; right: 6%; animation: bob 3.4s ease-in-out infinite; }
+  .mascot svg { width: 100%; height: 100%; overflow: visible; }
+  @keyframes bob { 0%, 100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-14px) rotate(3deg); } }
+  @media (prefers-reduced-motion: reduce) { .mascot { animation: none; } }
+  @media (max-width: 700px) { .mascot { display: none; } }
+
+  /* ---------- why-now strip ---------- */
+  .strip { padding-block: 1.6rem; border-top: 1px dashed var(--line-strong); border-bottom: 1px dashed var(--line-strong); background: var(--surface); }
+  .strip .wrap { display: flex; align-items: baseline; gap: 1.25rem; flex-wrap: wrap; }
+  .strip p { margin: 0; font-size: 1rem; color: var(--ink-soft); max-width: 52em; }
+  .strip p b { color: var(--accent); font-weight: 800; }
+
+  /* ---------- consonant / vowel diagrams ---------- */
+  .principle-row { display: grid; grid-template-columns: 128px repeat(3, 1fr); align-items: center; gap: 0.75rem; padding: 1.15rem 0; border-top: 1px dashed var(--line); }
+  .principle-row:last-child { border-bottom: 1px dashed var(--line); }
+  .principle-row .organ { font-size: 0.86rem; font-weight: 800; color: var(--ink); }
+  .principle-row .organ span { display: block; font-family: ui-monospace, monospace; font-weight: 600; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); margin-top: 0.15rem; }
+  .glyph-cell { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
+  .glyph-cell .arrow { color: var(--ink-soft); font-size: 1rem; flex: none; }
+  .glyph { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+  .glyph.base { color: var(--ink); }
+  .glyph.derived { color: var(--accent); text-shadow: 0 0 20px var(--accent-soft); }
+  .glyph-note { font-family: ui-monospace, monospace; font-size: 0.6rem; color: var(--ink-soft); text-transform: uppercase; }
+
+  .vowel-strokes { display: flex; gap: clamp(1.5rem, 4vw, 3.5rem); margin: 2rem 0 2.5rem; flex-wrap: wrap; }
+  .stroke-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.25rem 1.5rem; }
+  .stroke-card .glyph { font-size: 2.8rem; }
+  .stroke-card .label { font-weight: 800; margin-top: 0.4rem; font-size: 0.92rem; }
+  .stroke-card .desc { font-family: ui-monospace, monospace; font-size: 0.64rem; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.2rem; }
+
+  .vowel-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  .vowel-grid div { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 1.4rem 0.5rem; text-align: center; font-size: 1.9rem; font-weight: 800; transition: transform .18s cubic-bezier(.34,1.56,.64,1); }
+  .vowel-grid div:hover { transform: translateY(-4px) rotate(-2deg); border-color: var(--accent); }
+  @media (max-width: 560px) { .vowel-grid div { font-size: 1.4rem; padding: 1rem 0.25rem; } }
+
+  /* ---------- product ---------- */
+  .product-layout { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  @media (max-width: 860px) { .product-layout { grid-template-columns: 1fr; } }
+  .feature-list { list-style: none; margin: 2rem 0 0; padding: 0; display: grid; gap: 1.1rem; }
+  .feature-list li { padding-left: 1.5rem; position: relative; color: var(--ink-soft); font-size: 0.98rem; }
+  .feature-list li::before { content: "♥"; position: absolute; left: 0; top: 0.05em; font-size: 0.85rem; color: var(--accent2); }
+  .feature-list b { color: var(--ink); font-weight: 800; }
+
+  .mock-card.spark-border { border-radius: 24px; }
+  .mock-card .spark-inner { border-radius: 22px; overflow: hidden; }
+  .mock-titlebar { display: flex; align-items: center; gap: 0.4rem; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line); background: var(--surface-2); }
+  .mock-titlebar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); display: block; }
+  .mock-titlebar span { margin-left: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.64rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+  .mock-body { padding: 1.9rem 1.6rem 2.3rem; }
+  .mock-field { border: 1px solid var(--line-strong); border-radius: 14px; padding: 0.95rem 1.1rem; font-size: 1.05rem; min-height: 1.4em; background: var(--bg); }
+  .mock-field .cursor { display: inline-block; width: 2px; height: 1.1em; background: var(--accent); vertical-align: -0.2em; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .mock-field .cursor { animation: none; } }
+  .mock-arrow { text-align: center; color: var(--ink-soft); font-size: 0.85rem; margin: 0.8rem 0; font-family: ui-monospace, monospace; }
+  .mock-output { font-size: 1.4rem; font-weight: 800; min-height: 1.4em; color: var(--accent2); text-shadow: 0 0 16px var(--accent2-soft); }
+  .mock-caption { margin-top: 1.3rem; font-family: ui-monospace, monospace; font-size: 0.64rem; color: var(--ink-soft); text-transform: uppercase; }
+
+  /* ---------- roadmap: photocard grid ---------- */
+  .precedent { border-left: 3px solid var(--accent2); padding: 1rem 0 1rem 1.25rem; margin: 2rem 0 2.75rem; max-width: 42em; color: var(--ink-soft); font-size: 0.98rem; border-radius: 0 12px 12px 0; background: var(--accent2-soft); }
+  .precedent b { color: var(--ink); }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.1rem; }
+  .photocard.spark-border { border-radius: 22px; transition: transform .2s cubic-bezier(.34,1.56,.64,1); }
+  .photocard.spark-border:hover { transform: translateY(-5px) rotate(-1deg); }
+  .photocard .spark-inner { border-radius: 20px; padding: 1.3rem 1.25rem 1.4rem; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.9rem; min-height: 150px; }
+  .photocard .spark-inner::before {
+    content: ""; position: absolute; inset: -60% -20%; z-index: 0;
+    background: linear-gradient(115deg, transparent 40%, color-mix(in srgb, var(--accent2) 35%, transparent) 50%, transparent 60%);
+    transform: translateX(-120%); transition: transform .7s ease;
+  }
+  .photocard:hover .spark-inner::before { transform: translateX(60%); }
+  .photocard > * { position: relative; z-index: 1; }
+  .chip { display: inline-flex; align-items: center; gap: 0.4rem; font-family: ui-monospace, monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.32rem 0.65rem; border-radius: 999px; border: 1px solid transparent; width: fit-content; position: relative; z-index: 1; }
+  .chip::before { content: ""; width: 6px; height: 6px; border-radius: 50%; }
+  .chip.live { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+  .chip.live::before { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .chip.research { color: var(--accent2); border-color: var(--accent2); background: var(--accent2-soft); }
+  .chip.research::before { background: var(--accent2); box-shadow: 0 0 8px var(--accent2); }
+  .chip.planned { color: var(--ink-soft); border-color: var(--line-strong); }
+  .chip.planned::before { background: var(--ink-soft); }
+  .photocard .native { font-size: 1.45rem; font-weight: 800; position: relative; z-index: 1; }
+  .photocard .en { font-family: ui-monospace, monospace; font-size: 0.66rem; text-transform: uppercase; color: var(--ink-soft); position: relative; z-index: 1; }
+
+  /* ---------- join ---------- */
+  .join-inner { display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; flex-wrap: wrap; }
+  .join-inner h2 { font-size: clamp(2rem, 4vw, 3rem); max-width: 14em; }
+
+  footer { border-top: 1px dashed var(--line-strong); padding: 2.5rem clamp(1.25rem, 4vw, 3rem) 3rem; }
+  .footer-inner { max-width: 1180px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; font-family: ui-monospace, monospace; font-size: 0.72rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">한글<span class="dot">피아</span> <small>HANGULPIA</small></a>
+    <div class="topbar-right">
+      <nav class="primary">
+        <a class="i18n" data-en="How it works" data-ko="원리" href="#principle">How it works</a>
+        <a class="i18n" data-en="Product" data-ko="제품" href="#product">Product</a>
+        <a class="i18n" data-en="Roadmap" data-ko="로드맵" href="#roadmap">Roadmap</a>
+        <a class="i18n" data-en="Join us" data-ko="참여" href="#join">Join us</a>
+      </nav>
+      <div class="pill-switch" role="group" aria-label="Language">
+        <button type="button" class="lang-btn active" data-lang="en">EN</button>
+        <button type="button" class="lang-btn" data-lang="ko">한글</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">◐</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <span class="glow-blob b1" aria-hidden="true"></span>
+      <span class="glow-blob b2" aria-hidden="true"></span>
+      <span class="glow-blob b3" aria-hidden="true"></span>
+      <canvas id="sparkleCanvas" aria-hidden="true"></canvas>
+
+      <div class="mascot" aria-hidden="true">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="var(--surface)" stroke="var(--accent)" stroke-width="4"/>
+          <circle cx="34" cy="46" r="14" fill="none" stroke="var(--ink)" stroke-width="4"/>
+          <circle cx="66" cy="46" r="14" fill="none" stroke="var(--ink)" stroke-width="4"/>
+          <circle cx="34" cy="46" r="3.4" fill="var(--ink)"/>
+          <circle cx="66" cy="46" r="3.4" fill="var(--ink)"/>
+          <path d="M40 68 Q50 76 60 68" fill="none" stroke="var(--ink)" stroke-width="4" stroke-linecap="round"/>
+          <ellipse cx="22" cy="60" rx="6" ry="4" fill="var(--accent)" opacity="0.45"/>
+          <ellipse cx="78" cy="60" rx="6" ry="4" fill="var(--accent)" opacity="0.45"/>
+        </svg>
+      </div>
+
+      <div class="hero-content">
+        <p class="eyebrow i18n" data-en="Hunminjeongeom · 1446, King Sejong" data-ko="訓民正音 · 세종 28년, 1446">Hunminjeongeom · 1446, King Sejong</p>
+        <h1 class="i18n-html" data-en-html="Every language,<br>written in <span class=&quot;spark-text&quot;>Hangul</span>." data-ko-html="세상의 모든 말을,<br><span class=&quot;spark-text&quot;>한글</span>로 적다.">Every language,<br>written in <span class="spark-text">Hangul</span>.</h1>
+        <p class="lede i18n" data-en="Hangul wasn't born, it was designed — sketched straight from the shape of the human mouth and throat, like a science project 500 years ahead of schedule. Now we're teaching it to carry sounds beyond Korean." data-ko="한글은 진화한 문자가 아니라 설계된 문자입니다. 사람의 발음 기관을 관찰해 만든, 세계에서 가장 체계적인 문자 체계로 이제 한국어 바깥의 소리까지 담으려 합니다.">Hangul wasn't born, it was designed — sketched straight from the shape of the human mouth and throat, like a science project 500 years ahead of schedule. Now we're teaching it to carry sounds beyond Korean.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary i18n" data-en="Download the Japanese IME" data-ko="한글일본어입력기 다운로드" href="#product">Download the Japanese IME</a>
+          <span class="btn-ghost spark-border"><a class="spark-inner i18n" data-en="Why Hangul?" data-ko="왜 한글인가" href="#principle">Why Hangul?</a></span>
+        </div>
+        <div class="status-line">
+          <span class="pulse"></span>
+          <span class="i18n" data-en="Now live — 日本語 (Japanese) · 1 language and counting" data-ko="지금 가능한 언어 — 日本語(일본어) · 1개 언어 서비스 중">Now live — 日本語 (Japanese) · 1 language and counting</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="wrap">
+      <p class="i18n" data-en="WHY NOW — Millions of K-pop fans already learn Hangul just to read lyrics without subtitles. Hangulpia is the next step: writing your own language in Hangul." data-ko="WHY NOW — 전 세계 K-pop 팬들은 이미 자막 없이 가사를 읽고 싶어서 한글을 배우고 있습니다. Hangulpia는 그다음 단계 — 한글로 자기 언어를 적는 경험 — 를 만듭니다.">WHY NOW — Millions of K-pop fans already learn Hangul just to read lyrics without subtitles. Hangulpia is the next step: writing your own language in Hangul.</p>
+    </div>
+  </div>
+
+  <section id="principle">
+    <div class="wrap grid-frame">
+      <div class="track-label">TRACK<b>01</b></div>
+      <div>
+        <p class="eyebrow i18n" data-en="The Stroke-Adding Rule" data-ko="가획의 원리">The Stroke-Adding Rule</p>
+        <h2 class="i18n" data-en="Letters shaped like the sounds they make" data-ko="말하는 모양을 그대로 그리다">Letters shaped like the sounds they make</h2>
+        <p class="lede i18n" data-en="Hangul's five basic consonants are literal sketches of your mouth and throat mid-sound. Add one stroke for a stronger sound — that's the whole rulebook. Nothing to memorize, everything to derive." data-ko="한글 자음의 기본자 다섯은 소리를 낼 때의 발음 기관 모양을 본떴습니다. 그리고 소리가 세질수록 획을 하나씩 더하는 규칙만으로 나머지 글자를 만들었습니다 — 외워야 할 기호가 아니라, 유도할 수 있는 체계입니다.">Hangul's five basic consonants are literal sketches of your mouth and throat mid-sound. Add one stroke for a stronger sound — that's the whole rulebook. Nothing to memorize, everything to derive.</p>
+
+        <div style="margin-top:2.5rem">
+          <div class="principle-row">
+            <div class="organ i18n" data-en="Molar sound" data-ko="어금닛소리">Molar sound<span>ROOT OF TONGUE</span></div>
+            <div class="glyph-cell"><span class="glyph base">ㄱ</span><span class="arrow">→</span><span class="glyph derived">ㅋ</span></div>
+            <div class="glyph-cell"></div>
+            <div class="glyph-note i18n" data-en="Tongue root blocks the throat" data-ko="혀뿌리가 목구멍을 막는 모양">Tongue root blocks the throat</div>
+          </div>
+          <div class="principle-row">
+            <div class="organ i18n" data-en="Tongue sound" data-ko="혀소리">Tongue sound<span>TONGUE</span></div>
+            <div class="glyph-cell"><span class="glyph base">ㄴ</span><span class="arrow">→</span><span class="glyph derived">ㄷ</span></div>
+            <div class="glyph-cell"><span class="arrow">→</span><span class="glyph derived">ㅌ</span></div>
+            <div class="glyph-note i18n" data-en="Tongue touches the upper ridge" data-ko="혀가 윗잇몸에 닿는 모양">Tongue touches the upper ridge</div>
+          </div>
+          <div class="principle-row">
+            <div class="organ i18n" data-en="Lip sound" data-ko="입술소리">Lip sound<span>LIPS</span></div>
+            <div class="glyph-cell"><span class="glyph base">ㅁ</span><span class="arrow">→</span><span class="glyph derived">ㅂ</span></div>
+            <div class="glyph-cell"><span class="arrow">→</span><span class="glyph derived">ㅍ</span></div>
+            <div class="glyph-note i18n" data-en="Shape of the mouth" data-ko="입의 모양">Shape of the mouth</div>
+          </div>
+          <div class="principle-row">
+            <div class="organ i18n" data-en="Tooth sound" data-ko="잇소리">Tooth sound<span>TEETH</span></div>
+            <div class="glyph-cell"><span class="glyph base">ㅅ</span><span class="arrow">→</span><span class="glyph derived">ㅈ</span></div>
+            <div class="glyph-cell"><span class="arrow">→</span><span class="glyph derived">ㅊ</span></div>
+            <div class="glyph-note i18n" data-en="Shape of a tooth" data-ko="이의 모양">Shape of a tooth</div>
+          </div>
+          <div class="principle-row">
+            <div class="organ i18n" data-en="Throat sound" data-ko="목구멍소리">Throat sound<span>THROAT</span></div>
+            <div class="glyph-cell"><span class="glyph base">ㅇ</span><span class="arrow">→</span><span class="glyph derived">ㆆ</span></div>
+            <div class="glyph-cell"><span class="arrow">→</span><span class="glyph derived">ㅎ</span></div>
+            <div class="glyph-note i18n" data-en="Shape of the throat · ㆆ is obsolete today" data-ko="목구멍의 모양 · ㆆ은 현대 미사용">Shape of the throat · ㆆ is obsolete today</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wrap grid-frame" style="margin-top: clamp(3rem, 7vw, 5rem)">
+      <div class="track-label">TRACK<b>02</b></div>
+      <div>
+        <p class="eyebrow i18n" data-en="Heaven, Earth, Human" data-ko="천지인 (天地人)">Heaven, Earth, Human</p>
+        <h2 class="i18n" data-en="Three strokes, infinite vowels" data-ko="하늘과 땅과 사람, 세 획">Three strokes, infinite vowels</h2>
+        <p class="lede i18n" data-en="Every vowel starts from just three shapes: the roundness of the sky, the flatness of the earth, a person standing tall. Combine them and you get every vowel below." data-ko="모음은 단 세 개의 기본 획에서 시작합니다. 하늘의 둥긂, 땅의 평평함, 사람이 선 모습 — 이 세 상형만으로 아래 모든 모음이 파생됩니다.">Every vowel starts from just three shapes: the roundness of the sky, the flatness of the earth, a person standing tall. Combine them and you get every vowel below.</p>
+
+        <div class="vowel-strokes">
+          <div class="stroke-card"><div class="glyph spark-text">·</div><div class="label i18n" data-en="Sky" data-ko="하늘">Sky</div><div class="desc">HEAVEN</div></div>
+          <div class="stroke-card"><div class="glyph spark-text">ㅡ</div><div class="label i18n" data-en="Earth" data-ko="땅">Earth</div><div class="desc">EARTH</div></div>
+          <div class="stroke-card"><div class="glyph spark-text">ㅣ</div><div class="label i18n" data-en="Human" data-ko="사람">Human</div><div class="desc">HUMAN</div></div>
+        </div>
+
+        <div class="vowel-grid">
+          <div>ㅏ</div><div>ㅑ</div><div>ㅓ</div><div>ㅕ</div>
+          <div>ㅗ</div><div>ㅛ</div><div>ㅜ</div><div>ㅠ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="product">
+    <div class="wrap grid-frame">
+      <div class="track-label">TRACK<b>03</b></div>
+      <div>
+        <p class="eyebrow i18n" data-en="Live Now" data-ko="지금, 첫 한 걸음">Live Now</p>
+        <h2 class="i18n-html" style="font-size:clamp(2rem,3.6vw + 1rem,3.25rem)" data-en-html="First up: <span class=&quot;spark-text&quot;>Japanese</span>" data-ko-html="첫 언어는 <span class=&quot;spark-text&quot;>일본어</span>입니다">First up: <span class="spark-text">Japanese</span></h2>
+        <p class="lede i18n" data-en="Type on your regular Dubeolsik keyboard, get real-time Hiragana. A statistical engine trained on real usage fills in the idioms no plain rulebook could ever catch." data-ko="쓰던 두벌식 자판 그대로 입력하면, 실시간으로 히라가나가 완성됩니다. 규칙만으로는 잡히지 않는 관용 표기까지, 11만 문장을 학습한 통계 엔진이 채웁니다.">Type on your regular Dubeolsik keyboard, get real-time Hiragana. A statistical engine trained on real usage fills in the idioms no plain rulebook could ever catch.</p>
+
+        <div class="product-layout" style="margin-top:2.5rem">
+          <ul class="feature-list">
+            <li class="i18n-html" data-en-html="<b>Real-time conversion</b> — Dubeolsik in, Hiragana out, no retraining needed" data-ko-html="<b>실시간 변환</b> — 두벌식 입력을 그대로 히라가나로, 별도 학습 없이"><b>Real-time conversion</b> — Dubeolsik in, Hiragana out, no retraining needed</li>
+            <li class="i18n-html" data-en-html="<b>Statistically trained</b> — learned from 110k Japanese Wikipedia sentences to catch what rules alone miss" data-ko-html="<b>통계 학습 엔진</b> — 일본어 위키피디아 11만 문장 코퍼스로 학습한 음성 디코더가 규칙만으로 안 되는 표기를 보정"><b>Statistically trained</b> — learned from 110k Japanese Wikipedia sentences to catch what rules alone miss</li>
+            <li class="i18n-html" data-en-html="<b>Context reranking</b> — reads the whole sentence to pick the most natural candidate" data-ko-html="<b>문맥 재랭킹</b> — 앞뒤 문맥을 함께 보고 가장 자연스러운 후보를 문장 단위로 선택"><b>Context reranking</b> — reads the whole sentence to pick the most natural candidate</li>
+            <li class="i18n-html" data-en-html="<b>Built for macOS</b> — native InputMethodKit app, ready today. Windows is next." data-ko-html="<b>macOS 지원</b> — InputMethodKit 네이티브 앱으로 지금 바로 설치, Windows는 준비 중"><b>Built for macOS</b> — native InputMethodKit app, ready today. Windows is next.</li>
+          </ul>
+
+          <div class="spark-border mock-card" aria-hidden="true">
+            <div class="spark-inner">
+              <div class="mock-titlebar"><i></i><i></i><i></i><span>hangul → hiragana</span></div>
+              <div class="mock-body">
+                <div class="mock-field"><span id="mockInput"></span><span class="cursor"></span></div>
+                <div class="mock-arrow">↓</div>
+                <div class="mock-output" id="mockOutput"></div>
+                <div class="mock-caption">Live preview · BeamDecoder</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-cta" style="margin-top:2.5rem">
+          <a class="btn btn-primary i18n" data-en="Download for macOS" data-ko="macOS용 다운로드" href="./downloads/HangulJapaneseIME-latest.zip">Download for macOS</a>
+          <span class="btn-ghost spark-border"><a class="spark-inner i18n" data-en="See what's next" data-ko="다음 언어 보기" href="#roadmap">See what's next</a></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="wrap grid-frame">
+      <div class="track-label">TRACK<b>04</b></div>
+      <div>
+        <p class="eyebrow i18n" data-en="One Script, Every Language" data-ko="한 문자, 모든 언어">One Script, Every Language</p>
+        <h2 class="i18n" data-en="What's next?" data-ko="다음은 어떤 언어입니까">What's next?</h2>
+
+        <div class="precedent i18n-html" data-en-html="Hangul has already proven it can go beyond Korean. In 2009, the Cia-Cia language of Buton Island, Indonesia — with no writing system of its own — adopted Hangul because it captured their sounds best. <b>Hangulpia turns that experiment into a product.</b>" data-ko-html="한글이 한국어 전용 문자가 아니라는 건 이미 실증된 적이 있습니다. <b>2009년, 표기 문자가 없던 인도네시아 부톤섬의 찌아찌아어</b>는 소리를 가장 정확히 담을 수 있는 문자로 한글을 채택했습니다. Hangulpia는 이 실험을 하나의 제품으로 만드는 일입니다.">
+          Hangul has already proven it can go beyond Korean. In 2009, the Cia-Cia language of Buton Island, Indonesia — with no writing system of its own — adopted Hangul because it captured their sounds best. <b>Hangulpia turns that experiment into a product.</b>
+        </div>
+
+        <div class="card-grid">
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip live i18n" data-en="Live" data-ko="지원 중">Live</span>
+              <div><div class="native">日本語</div><div class="en">Japanese · macOS</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip research i18n" data-en="In research" data-ko="연구 중">In research</span>
+              <div><div class="native">Tiếng Việt</div><div class="en">Vietnamese</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip research i18n" data-en="In research" data-ko="연구 중">In research</span>
+              <div><div class="native">ภาษาไทย</div><div class="en">Thai</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip research i18n" data-en="In research" data-ko="연구 중">In research</span>
+              <div><div class="native">Монгол хэл</div><div class="en">Mongolian</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip planned i18n" data-en="Planned" data-ko="계획">Planned</span>
+              <div><div class="native">Kiswahili</div><div class="en">Swahili</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip planned i18n" data-en="Planned" data-ko="계획">Planned</span>
+              <div><div class="native">Filipino</div><div class="en">Filipino</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip planned i18n" data-en="Planned" data-ko="계획">Planned</span>
+              <div><div class="native">isiZulu</div><div class="en">Zulu</div></div>
+            </div>
+          </div>
+          <div class="spark-border photocard">
+            <div class="spark-inner">
+              <span class="chip planned i18n" data-en="Planned" data-ko="계획">Planned</span>
+              <div><div class="native">Aymara</div><div class="en">Aymara</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="join">
+    <div class="wrap">
+      <div class="join-inner">
+        <h2 class="i18n-html" data-en-html="Come build<br>the next chapter" data-ko-html="함께 만들 사람을<br>찾습니다">Come build<br>the next chapter</h2>
+        <div>
+          <p class="lede i18n" style="margin-top:0" data-en="Linguist, phonetician, or just love an under-served language? Help us pick what comes after Japanese." data-ko="언어학, 음성학, 저자원 언어 데이터에 관심 있다면 — 다음 언어를 함께 정합니다.">Linguist, phonetician, or just love an under-served language? Help us pick what comes after Japanese.</p>
+          <div class="hero-cta" style="margin-top:1.5rem">
+            <a class="btn btn-primary i18n" data-en="Say hi" data-ko="문의하기" href="mailto:wowlsh93@gmail.com">Say hi</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <span>Hangulpia · 訓民正音 1446</span>
+    <span id="year">2026</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var toggle = document.getElementById('themeToggle');
+    var root = document.documentElement;
+    var stored = null;
+    try { stored = localStorage.getItem('hangulpia-theme'); } catch (e) {}
+    if (stored) root.setAttribute('data-theme', stored);
+    toggle.addEventListener('click', function () {
+      var current = root.getAttribute('data-theme');
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      var isDark = current ? current === 'dark' : prefersDark;
+      var next = isDark ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try { localStorage.setItem('hangulpia-theme', next); } catch (e) {}
+    });
+  })();
+
+  (function () {
+    var LANG_KEY = 'hangulpia-lang';
+    var root = document.documentElement;
+    function applyLang(lang) {
+      root.setAttribute('lang', lang);
+      document.querySelectorAll('.i18n').forEach(function (el) {
+        var v = el.getAttribute('data-' + lang);
+        if (v !== null) el.textContent = v;
+      });
+      document.querySelectorAll('.i18n-html').forEach(function (el) {
+        var v = el.getAttribute('data-' + lang + '-html');
+        if (v !== null) el.innerHTML = v;
+      });
+      document.querySelectorAll('.lang-btn').forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-lang') === lang);
+      });
+    }
+    var stored = null;
+    try { stored = localStorage.getItem(LANG_KEY); } catch (e) {}
+    applyLang(stored || 'en');
+    document.querySelectorAll('.lang-btn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var lang = b.getAttribute('data-lang');
+        applyLang(lang);
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+      });
+    });
+  })();
+
+  (function () {
+    var yearEl = document.getElementById('year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+  })();
+
+  (function () {
+    var pairs = [
+      ['곤니찌와', 'こんにちわ'],
+      ['아리가토', 'ありがとう'],
+      ['스미마셍', 'すみません'],
+      ['사쿠라', 'さくら']
+    ];
+    var inputEl = document.getElementById('mockInput');
+    var outputEl = document.getElementById('mockOutput');
+    if (inputEl && outputEl) {
+      var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var i = 0;
+      var show = function () {
+        var pair = pairs[i % pairs.length];
+        inputEl.textContent = pair[0];
+        outputEl.textContent = pair[1];
+        i++;
+      };
+      show();
+      if (!reduceMotion) setInterval(show, 2600);
+    }
+  })();
+
+  (function () {
+    var canvas = document.getElementById('sparkleCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var stars = [];
+    var W, H, DPR;
+
+    function tintRGB() {
+      var isDark = document.documentElement.getAttribute('data-theme')
+        ? document.documentElement.getAttribute('data-theme') === 'dark'
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return isDark ? '255,143,187' : '255,111,165';
+    }
+
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      W = canvas.clientWidth; H = canvas.clientHeight;
+      canvas.width = W * DPR; canvas.height = H * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
+    function seed() {
+      stars = [];
+      var count = Math.max(16, Math.floor((W * H) / 32000));
+      for (var n = 0; n < count; n++) {
+        stars.push({
+          x: Math.random() * W, y: Math.random() * H,
+          size: 6 + Math.random() * 8,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.015 + Math.random() * 0.02,
+          drift: (Math.random() - 0.5) * 0.05
+        });
+      }
+    }
+
+    function star(cx, cy, r, alpha, rgb) {
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = 'rgb(' + rgb + ')';
+      ctx.beginPath();
+      ctx.moveTo(0, -r); ctx.lineTo(r * 0.22, -r * 0.22); ctx.lineTo(r, 0);
+      ctx.lineTo(r * 0.22, r * 0.22); ctx.lineTo(0, r); ctx.lineTo(-r * 0.22, r * 0.22);
+      ctx.lineTo(-r, 0); ctx.lineTo(-r * 0.22, -r * 0.22); ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function frame(t) {
+      ctx.clearRect(0, 0, W, H);
+      var rgb = tintRGB();
+      stars.forEach(function (s) {
+        var a = 0.18 + 0.42 * (0.5 + 0.5 * Math.sin(s.phase + t * s.speed));
+        s.x += s.drift;
+        if (s.x < 0) s.x = W; if (s.x > W) s.x = 0;
+        star(s.x, s.y, s.size / 2, a, rgb);
+      });
+      if (!reduceMotion) requestAnimationFrame(frame);
+    }
+
+    window.addEventListener('resize', function () { resize(); seed(); });
+    resize(); seed();
+    if (reduceMotion) { frame(0); } else { requestAnimationFrame(frame); }
+  })();
+</script>
+</body>
+</html>

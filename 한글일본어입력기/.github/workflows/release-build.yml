@@ -1,0 +1,99 @@
+name: Release Build
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '릴리즈 버전 (예: v0.1.0)'
+        required: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # macOS 릴리즈 빌드
+  macos-release:
+    name: 🍎 macOS Release
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-apple-darwin, aarch64-apple-darwin
+      - uses: Swatinem/rust-cache@v2
+
+      - name: 빌드 (x86_64)
+        run: cargo build --workspace --release --target x86_64-apple-darwin
+
+      - name: 빌드 (aarch64 / Apple Silicon)
+        run: cargo build --workspace --release --target aarch64-apple-darwin
+
+      - name: Universal Binary 생성
+        run: |
+          mkdir -p target/universal-release
+          for bin in target/x86_64-apple-darwin/release/*.dylib; do
+            NAME=$(basename "$bin")
+            if [ -f "target/aarch64-apple-darwin/release/$NAME" ]; then
+              lipo -create \
+                "target/x86_64-apple-darwin/release/$NAME" \
+                "target/aarch64-apple-darwin/release/$NAME" \
+                -output "target/universal-release/$NAME"
+            fi
+          done
+
+      - name: 아티팩트 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-release
+          path: target/universal-release/
+
+  # Android 릴리즈 빌드
+  android-release:
+    name: 📱 Android Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android
+      - uses: Swatinem/rust-cache@v2
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r26d
+
+      - name: 빌드 (aarch64)
+        run: cargo build -p ime-android-bridge --release --target aarch64-linux-android
+        continue-on-error: true
+
+      - name: 빌드 (armv7)
+        run: cargo build -p ime-android-bridge --release --target armv7-linux-androideabi
+        continue-on-error: true
+
+      - name: 아티팩트 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release
+          path: |
+            target/aarch64-linux-android/release/*.so
+            target/armv7-linux-androideabi/release/*.so
+
+  # GitHub Release 생성
+  create-release:
+    name: 📦 GitHub Release
+    needs: [macos-release, android-release]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+
+      - name: 릴리즈 생성
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            macos-release/*
+            android-release/**/*

@@ -1,0 +1,5 @@
+module CHJEngine {
+    header "hj_engine.h"
+    link "hj_engine"
+    export *
+}

@@ -1,0 +1,34 @@
+[workspace]
+members = [
+    "crates/core",
+    "crates/hangul",
+    "crates/japanese",
+    "crates/db",
+    "crates/macos-ime",
+    "crates/windows-ime",
+    "crates/android-bridge",
+    "crates/cli",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.2"
+edition = "2021"
+rust-version = "1.75"
+license = "MIT"
+authors = ["jhzhang6902@gmail.com"]
+
+[workspace.dependencies]
+# Core
+unicode-segmentation = "1.11"
+log = "0.4"
+env_logger = "0.11"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# Testing
+pretty_assertions = "1.4"

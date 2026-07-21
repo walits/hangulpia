@@ -1,0 +1,43 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+*.dSYM/
+
+# Android
+*.apk
+*.aab
+*.aar
+local.properties
+.gradle/
+build/
+
+# SQLite
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Coverage & profiling
+*.profraw
+lcov.info
+coverage/
+tarpaulin-report.html
+
+# Redundant full-project backup archive (duplicate of 한글일본어입력기/, exceeds GitHub's 100MB limit)
+/한글일본어입력기.zip

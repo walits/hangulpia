@@ -1,0 +1,40 @@
+# PR 자동 라벨링 규칙
+core:
+  - changed-files:
+    - any-glob-to-any-file: 'crates/core/**'
+
+hangul:
+  - changed-files:
+    - any-glob-to-any-file: 'crates/hangul/**'
+
+japanese:
+  - changed-files:
+    - any-glob-to-any-file: 'crates/japanese/**'
+
+database:
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'crates/db/**'
+      - 'dictionaries/**'
+      - '**/*.sql'
+
+macos:
+  - changed-files:
+    - any-glob-to-any-file: 'crates/macos-ime/**'
+
+android:
+  - changed-files:
+    - any-glob-to-any-file: 'crates/android-bridge/**'
+
+infra:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '.github/**'
+      - 'scripts/**'
+      - 'Cargo.toml'
+
+docs:
+  - changed-files:
+    - any-glob-to-any-file:
+      - '**/*.md'
+      - 'docs/**'

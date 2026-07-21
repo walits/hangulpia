@@ -1,0 +1,63 @@
+name: Agent → Staging PR
+
+on:
+  push:
+    branches: ['agent/**']
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  create-pr:
+    name: 📋 Staging PR 생성
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: staging 브랜치 확인
+        run: |
+          if ! git ls-remote --heads origin staging | grep -q staging; then
+            git checkout -b staging origin/main
+            git push origin staging
+          fi
+
+      - name: 기존 PR 확인
+        id: check-pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          EXISTING=$(gh pr list --head "$BRANCH" --base staging --state open --json number --jq '.[0].number // empty')
+          echo "existing_pr=${EXISTING}" >> "$GITHUB_OUTPUT"
+
+      - name: PR 생성
+        if: steps.check-pr.outputs.existing_pr == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          FILES=$(git diff --name-only origin/staging..HEAD 2>/dev/null | wc -l | tr -d ' ')
+
+          # 변경된 크레이트 감지
+          CRATES=$(git diff --name-only origin/staging..HEAD 2>/dev/null | grep -oP 'crates/\K[^/]+' | sort -u | tr '\n' ', ' | sed 's/,$//')
+
+          gh pr create \
+            --head "$BRANCH" --base staging \
+            --title "[Agent] ${BRANCH##agent/} (${FILES} files)" \
+            --body "## 🤖 Agent 자동 PR
+          **브랜치:** \`${BRANCH}\`
+          **영향 크레이트:** ${CRATES:-없음}
+
+          > ⚠️ CI 검증 통과 후 staging 머지를 진행하세요."
+
+      - name: 기존 PR 코멘트
+        if: steps.check-pr.outputs.existing_pr != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --format="%s")
+          gh pr comment "${{ steps.check-pr.outputs.existing_pr }}" \
+            --body "🔄 새 커밋: \`${{ github.sha }}\` - ${COMMIT_MSG}"

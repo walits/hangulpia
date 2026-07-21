@@ -1,0 +1,15 @@
+[package]
+name = "ime-core"
+description = "Core input method engine shared across platforms"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+unicode-segmentation.workspace = true
+log.workspace = true
+thiserror.workspace = true
+serde.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true

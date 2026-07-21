@@ -1,0 +1,93 @@
+[package]
+name = "ime-cli"
+description = "CLI prototype for testing Hangul→Japanese conversion"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[[bin]]
+name = "hj-ime"
+path = "src/main.rs"
+
+[[bin]]
+name = "hj-benchmark"
+path = "src/benchmark.rs"
+
+[[bin]]
+name = "hj-scaling-test"
+path = "src/scaling_test.rs"
+
+[[bin]]
+name = "hj-window-test"
+path = "src/window_test.rs"
+
+[[bin]]
+name = "hj-directional-test"
+path = "src/directional_test.rs"
+
+[[bin]]
+name = "hj-vocab-benchmark"
+path = "src/vocab_benchmark.rs"
+
+[[bin]]
+name = "hj-vocab-scaling"
+path = "src/vocab_scaling.rs"
+
+[[bin]]
+name = "hj-phonetic-benchmark"
+path = "src/phonetic_benchmark.rs"
+
+[[bin]]
+name = "hj-phonetic-diag"
+path = "src/phonetic_diag.rs"
+
+[[bin]]
+name = "hj-phonetic-improve"
+path = "src/phonetic_improve.rs"
+
+[[bin]]
+name = "hj-combined-benchmark"
+path = "src/combined_benchmark.rs"
+
+[[bin]]
+name = "hj-adjacent-sweep"
+path = "src/adjacent_sweep.rs"
+
+[[bin]]
+name = "hj-ngram-benchmark"
+path = "src/ngram_benchmark.rs"
+
+[[bin]]
+name = "hj-optimal"
+path = "src/optimal_benchmark.rs"
+
+[[bin]]
+name = "hj-scaling-optimal"
+path = "src/scaling_optimal.rs"
+
+[[bin]]
+name = "hj-vocab-scaling-d"
+path = "src/vocab_scaling_d.rs"
+
+[[bin]]
+name = "hj-autocomplete-bench"
+path = "src/autocomplete_bench.rs"
+
+[[bin]]
+name = "hj-ime-comparison"
+path = "src/ime_comparison.rs"
+
+[[bin]]
+name = "hj-long-vowel-analysis"
+path = "src/long_vowel_analysis.rs"
+
+[[bin]]
+name = "hj-wiki-benchmark"
+path = "src/wiki_benchmark.rs"
+
+[dependencies]
+ime-core = { path = "../core" }
+ime-hangul = { path = "../hangul" }
+ime-japanese = { path = "../japanese" }
+ime-db = { path = "../db" }
+serde_json.workspace = true

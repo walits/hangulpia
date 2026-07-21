@@ -1,0 +1,52 @@
+name: Promote to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      description:
+        description: '배포 설명'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  promote:
+    name: 🚀 Production 승격 PR
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 변경 확인 및 PR 생성
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git fetch origin main staging
+          DIFF=$(git rev-list --count origin/main..origin/staging)
+          if [ "$DIFF" -eq 0 ]; then
+            echo "::warning::staging과 main이 동일합니다."
+            exit 0
+          fi
+
+          EXISTING=$(gh pr list --head staging --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            gh pr comment "$EXISTING" --body "🔄 승격 요청: ${{ inputs.description }}"
+          else
+            COMMITS=$(git log origin/main..origin/staging --oneline)
+            gh pr create --head staging --base main \
+              --title "🚀 Production: ${{ inputs.description }}" \
+              --body "## 🚀 Production 승격
+          **설명:** ${{ inputs.description }}
+          **커밋 수:** ${DIFF}개
+
+          ### 커밋 내역
+          \`\`\`
+          ${COMMITS}
+          \`\`\`
+
+          > ✅ 머지하면 태그를 생성하여 릴리즈 빌드가 자동 실행됩니다."
+          fi

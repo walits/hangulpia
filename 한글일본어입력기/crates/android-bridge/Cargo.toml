@@ -1,0 +1,20 @@
+[package]
+name = "ime-android-bridge"
+description = "Android JNI bridge for the input method engine"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ime-core = { path = "../core" }
+ime-hangul = { path = "../hangul" }
+ime-japanese = { path = "../japanese" }
+ime-db = { path = "../db" }
+log.workspace = true
+
+# Android JNI
+jni = "0.21"
+android_logger = "0.13"

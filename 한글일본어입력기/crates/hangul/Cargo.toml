@@ -1,0 +1,14 @@
+[package]
+name = "ime-hangul"
+description = "Korean (Hangul) input engine with Dubeolsik/Sebeolsik support"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+ime-core = { path = "../core" }
+unicode-segmentation.workspace = true
+log.workspace = true
+
+[dev-dependencies]
+pretty_assertions.workspace = true

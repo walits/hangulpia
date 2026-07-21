@@ -1,0 +1,18 @@
+[package]
+name = "ime-macos"
+description = "macOS InputMethodKit integration — Rust engine as C static library"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+
+[lib]
+name = "hj_engine"
+crate-type = ["staticlib", "lib"]
+
+[dependencies]
+ime-core = { path = "../core" }
+ime-hangul = { path = "../hangul" }
+ime-japanese = { path = "../japanese" }
+ime-db = { path = "../db" }
+log.workspace = true
+env_logger.workspace = true

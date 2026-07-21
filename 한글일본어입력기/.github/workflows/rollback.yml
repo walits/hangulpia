@@ -1,0 +1,25 @@
+name: Manual Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_tag:
+        description: '롤백할 태그 (예: v0.1.0)'
+        required: true
+      reason:
+        description: '롤백 사유'
+        required: true
+
+jobs:
+  rollback:
+    name: 🔄 롤백
+    runs-on: ubuntu-latest
+    steps:
+      - name: 롤백 정보
+        run: |
+          echo "🔄 롤백 시작"
+          echo "대상 태그: ${{ inputs.target_tag }}"
+          echo "사유: ${{ inputs.reason }}"
+          echo ""
+          echo "⚠️ 해당 태그의 릴리즈 아티팩트를 다시 배포하세요."
+          echo "   gh release download ${{ inputs.target_tag }}"
