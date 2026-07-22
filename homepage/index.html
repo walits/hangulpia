@@ -157,6 +157,7 @@
   .btn-ghost.spark-border { border-radius: 999px; }
   .btn-ghost.spark-border .spark-inner { border-radius: 999px; padding: 0.9rem 1.7rem; display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 0.95rem; color: var(--ink); transition: transform .18s cubic-bezier(.34,1.56,.64,1); }
   .btn-ghost:hover .spark-inner { transform: translateY(-2px) scale(1.03); }
+  .btn-disabled { background: transparent; border: 1px dashed var(--line-strong); color: var(--ink-soft); cursor: default; }
 
   .status-line { margin-top: 3rem; display: flex; align-items: center; gap: 0.6rem; font-family: ui-monospace, monospace; font-size: 1rem; letter-spacing: 0.03em; color: var(--ink-soft); }
   .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 2.2s infinite; flex: none; }
@@ -402,6 +403,7 @@
 
         <div class="hero-cta" style="margin-top:2.5rem">
           <a class="btn btn-primary i18n" data-en="Download for macOS" data-ko="macOS용 다운로드" href="./downloads/HangulJapaneseIME-latest.zip">Download for macOS</a>
+          <span class="btn btn-disabled i18n" data-en="Windows — coming soon" data-ko="Windows — 준비 중" aria-disabled="true">Windows — coming soon</span>
           <span class="btn-ghost spark-border"><a class="spark-inner i18n" data-en="See what's next" data-ko="다음 언어 보기" href="#roadmap">See what's next</a></span>
         </div>
       </div>
