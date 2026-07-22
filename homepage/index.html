@@ -97,24 +97,30 @@
   /* ---------- top bar ---------- */
   .topbar { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--bg) 80%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
   .topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; background: linear-gradient(90deg, var(--spark-a), var(--spark-b), var(--spark-c)); opacity: 0.6; }
-  .topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 1rem clamp(1.25rem, 4vw, 3rem); max-width: 1180px; margin: 0 auto; gap: 1rem; }
-  .brand { display: flex; align-items: baseline; gap: 0.45rem; font-weight: 900; font-size: 1.08rem; letter-spacing: -0.01em; text-decoration: none; flex: none; }
+  .topbar-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 1rem; padding-bottom: 1rem;
+    padding-left: clamp(0.5rem, 1.5vw, 1rem);
+    padding-right: clamp(1.25rem, 4vw, 3rem);
+    max-width: 1180px; margin: 0 auto; gap: 1rem;
+  }
+  .brand { display: flex; align-items: baseline; gap: 0.5rem; font-weight: 900; font-size: 1.3rem; letter-spacing: -0.01em; text-decoration: none; flex: none; }
   .brand .dot { color: var(--accent); }
-  .brand small { font-family: ui-monospace, monospace; font-weight: 700; font-size: 0.64rem; color: var(--ink-soft); letter-spacing: 0.05em; }
-  .topbar-right { display: flex; align-items: center; gap: clamp(0.75rem, 2vw, 1.5rem); }
+  .brand small { font-family: ui-monospace, monospace; font-weight: 700; font-size: 0.78rem; color: var(--ink-soft); letter-spacing: 0.05em; }
+  .topbar-right { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.5rem); }
   nav.primary { display: flex; align-items: center; gap: clamp(0.9rem, 2vw, 1.6rem); }
-  nav.primary a { text-decoration: none; font-size: 0.86rem; font-weight: 700; color: var(--ink-soft); transition: color .15s ease; }
+  nav.primary a { text-decoration: none; font-size: 1rem; font-weight: 700; color: var(--ink-soft); transition: color .15s ease; }
   nav.primary a:hover { color: var(--ink); }
 
   .pill-switch { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px; gap: 2px; background: var(--surface); }
   .pill-switch button {
-    border: none; background: transparent; color: var(--ink-soft); font-weight: 800; font-size: 0.72rem;
-    letter-spacing: 0.03em; padding: 0.32rem 0.7rem; border-radius: 999px; cursor: pointer; transition: all .18s ease;
+    border: none; background: transparent; color: var(--ink-soft); font-weight: 800; font-size: 0.85rem;
+    letter-spacing: 0.03em; padding: 0.4rem 0.9rem; border-radius: 999px; cursor: pointer; transition: all .18s ease;
   }
   .pill-switch button.active { background: var(--accent); color: #fff; box-shadow: 0 3px 10px -3px rgba(var(--shadow-color), 0.6); }
   .theme-toggle {
     border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink);
-    width: 2.1rem; height: 2.1rem; border-radius: 999px; cursor: pointer; font-size: 0.9rem; display: grid; place-items: center;
+    width: 2.4rem; height: 2.4rem; border-radius: 999px; cursor: pointer; font-size: 1.05rem; display: grid; place-items: center;
   }
 
   /* ---------- section scaffolding ---------- */
@@ -143,6 +149,7 @@
   .hero-content { position: relative; z-index: 1; max-width: 800px; }
   .hero h1 { font-size: clamp(2.6rem, 5.4vw + 1rem, 5.2rem); line-height: 1.06; }
   .hero .lede { font-size: 1.2rem; max-width: 34em; }
+  .hero .eyebrow { font-size: 1.05rem; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 0.9rem; margin-top: 2.4rem; }
 
   .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 1.7rem; font-weight: 800; font-size: 0.95rem; text-decoration: none; border-radius: 999px; transition: transform .18s cubic-bezier(.34,1.56,.64,1), box-shadow .18s ease; border: none; cursor: pointer; }
