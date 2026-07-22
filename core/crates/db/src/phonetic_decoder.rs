@@ -324,7 +324,109 @@ impl<'a> BeamDecoder<'a> {
             })
             .collect()
     }
+
+    /// Decode a full sentence (word-splitting on whitespace) and return the
+    /// single best hiragana reading.
+    ///
+    /// A handful of Japanese grammatical patterns are pronounced one way but
+    /// spelled another (e.g. the topic particle は is pronounced "wa"), and
+    /// common copula/verb endings (です, ます, ...) fall on the wrong side of
+    /// voicing ambiguity the character-alignment PhoneticMap can't resolve
+    /// from vocabulary alone, no matter how large. Real usage patterns like
+    /// this need actual sentence-level training data to learn statistically;
+    /// short of that, these are handled as small, explicit exceptions,
+    /// applied per word before falling back to normal `decode()`.
+    pub fn decode_sentence(&self, hangul: &str) -> String {
+        let mut out = String::new();
+        let mut word_start = 0;
+        let chars: Vec<char> = hangul.chars().collect();
+
+        let mut i = 0;
+        while i <= chars.len() {
+            let at_boundary = i == chars.len() || chars[i].is_whitespace();
+            if at_boundary {
+                if i > word_start {
+                    let word: String = chars[word_start..i].iter().collect();
+                    out.push_str(&self.decode_word(&word));
+                }
+                if i < chars.len() {
+                    out.push(chars[i]);
+                }
+                word_start = i + 1;
+            }
+            i += 1;
+        }
+        out
+    }
+
+    /// Decode a single word: exact known phrases first (these can rely on
+    /// context — e.g. 곤니찌와 is the greeting word itself, not "곤니찌" +
+    /// topic particle, so it must win over the suffix rule below), then
+    /// grammatical suffix exceptions, then the learned PhoneticMap/rule-based
+    /// fallback via `decode()`.
+    fn decode_word(&self, word: &str) -> String {
+        if word.is_empty() {
+            return String::new();
+        }
+        if let Some(reading) = KNOWN_WORDS.iter().find(|(w, _)| *w == word) {
+            return reading.1.to_string();
+        }
+        let word_len = word.chars().count();
+        for (suffix, reading) in KNOWN_SUFFIXES {
+            let suffix_len = suffix.chars().count();
+            if word_len >= suffix_len && word.ends_with(suffix) {
+                let prefix: String = word.chars().take(word_len - suffix_len).collect();
+                let prefix_hira = self.decode_word(&prefix);
+                return format!("{}{}", prefix_hira, reading);
+            }
+        }
+        self.decode(word)
+            .into_iter()
+            .next()
+            .map(|(h, _)| h)
+            .unwrap_or_default()
+    }
 }
+
+/// Exact known phrases/words with a verified reading, checked before the
+/// suffix rule so words that happen to end in a "particle-shaped" syllable
+/// (e.g. 곤니찌와, where 와 is part of the greeting itself, not a topic
+/// particle) don't get mis-rewritten by it. Kept in sync with the browser
+/// demo's KNOWN_WORDS in homepage/index.html.
+const KNOWN_WORDS: &[(&str, &str)] = &[
+    ("사쿠라", "さくら"),
+    ("아리가토", "ありがとう"),
+    ("아리가토고자이마스", "ありがとうございます"),
+    ("스미마셍", "すみません"),
+    ("곤니찌와", "こんにちわ"),
+    ("오하요", "おはよう"),
+    ("오하요고자이마스", "おはようございます"),
+    ("하지메마시테", "はじめまして"),
+    ("사요나라", "さようなら"),
+    ("이타다키마스", "いただきます"),
+];
+
+/// Common grammatical endings, matched as a *suffix* (not just a standalone
+/// word) since they overwhelmingly attach directly to the preceding word
+/// with no space — e.g. 나마에와 ("name" + topic particle), not "나마에 와".
+/// Checked longest-first so e.g. 데스카 matches before the shorter 데스.
+///
+/// Trade-off: 와 as a bare trailing syllable is treated as the topic
+/// particle は (correct far more often than not) rather than the syllable
+/// わ — so a genuine content word ending in わ (e.g. 카와 "river") will be
+/// mis-converted. Real sentence-level training data would resolve this from
+/// context; a fixed list can't. Given how much more common the particle
+/// usage is in casual phrases, this favors the common case.
+const KNOWN_SUFFIXES: &[(&str, &str)] = &[
+    ("데스카", "ですか"),
+    ("데스요", "ですよ"),
+    ("데스네", "ですね"),
+    ("데스", "です"),
+    ("마스카", "ますか"),
+    ("마시타", "ました"),
+    ("마스", "ます"),
+    ("와", "は"), // topic particle は, pronounced "wa" — see trade-off note above
+];
 
 /// Rule-based fallback: decompose a single Hangul syllable into hiragana candidates.
 ///
@@ -1402,5 +1504,43 @@ mod tests {
         assert!(ni_s.contains(&"に"), "니→に expected, got: {:?}", ni_s);
         assert!(jji_s.contains(&"ち"), "찌→ち expected, got: {:?}", jji_s);
         assert!(wa_s.contains(&"わ"), "와→わ expected, got: {:?}", wa_s);
+    }
+
+    fn empty_decoder() -> BeamDecoder<'static> {
+        // Leaked on purpose: tests only, gives a PhoneticMap with the process
+        // lifetime so BeamDecoder's borrow is trivially 'static.
+        let map: &'static PhoneticMap = Box::leak(Box::new(PhoneticMap::new()));
+        BeamDecoder::new(map, 6, 5)
+    }
+
+    #[test]
+    fn test_wa_particle_is_ha_standalone_and_attached() {
+        let decoder = empty_decoder();
+        assert_eq!(decoder.decode_sentence("와"), "は");
+        // Attached to a preceding word is the far more common real pattern.
+        assert_eq!(decoder.decode_sentence("나마에와"), "なまえは");
+    }
+
+    #[test]
+    fn test_known_word_wins_over_suffix_rule() {
+        let decoder = empty_decoder();
+        // 곤니찌와 is the greeting itself — 와 here isn't a topic particle,
+        // so the exact-word dictionary must take priority over the suffix rule.
+        assert_eq!(decoder.decode_sentence("곤니찌와"), "こんにちわ");
+    }
+
+    #[test]
+    fn test_desu_suffix_endings() {
+        let decoder = empty_decoder();
+        assert_eq!(decoder.decode_sentence("데스카"), "ですか");
+        assert_eq!(decoder.decode_sentence("난데스카"), "なんですか");
+        assert_eq!(decoder.decode_sentence("마스"), "ます");
+    }
+
+    #[test]
+    fn test_decode_sentence_preserves_spacing() {
+        let decoder = empty_decoder();
+        let result = decoder.decode_sentence("나마에와 난데스카");
+        assert_eq!(result, "なまえは なんですか");
     }
 }

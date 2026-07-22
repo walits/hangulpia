@@ -11,6 +11,8 @@ use std::sync::Mutex;
 use ime_db::phonetic_decoder::{PhoneticMap, BeamDecoder};
 use ime_db::kana_hangul::hiragana_to_hangul;
 use ime_db::vocab::build_vocab;
+use ime_db::vocab_extended::build_extended_vocab;
+use ime_db::vocab_large::build_vocab_large;
 use ime_db::DictionaryDb;
 
 /// Opaque engine handle passed across the FFI boundary.
@@ -42,8 +44,12 @@ pub extern "C" fn hj_engine_init(db_path: *const c_char) -> i32 {
         Err(_) => return -1,
     };
 
-    // Build vocabulary and populate dictionary
-    let vocab = build_vocab();
+    // Build vocabulary and populate dictionary.
+    // Combines all three vocab tiers (was: build_vocab() alone, ~730 entries)
+    // for far better real-world coverage.
+    let mut vocab = build_vocab();
+    vocab.extend(build_extended_vocab());
+    vocab.extend(build_vocab_large());
     let dict = db.kanji_dict();
     let entries: Vec<(&str, &str, i64)> = vocab
         .iter()
@@ -215,13 +221,12 @@ pub extern "C" fn hj_hangul_to_hiragana(hangul: *const c_char) -> *mut c_char {
     };
 
     let decoder = BeamDecoder::new(&eng.phonetic_map, 4, 1);
-    let candidates = decoder.decode(hangul_str);
+    let hiragana = decoder.decode_sentence(hangul_str);
 
-    match candidates.first() {
-        Some((hiragana, _)) => {
-            CString::new(hiragana.as_str()).unwrap_or_default().into_raw()
-        }
-        None => ptr::null_mut(),
+    if hiragana.is_empty() {
+        ptr::null_mut()
+    } else {
+        CString::new(hiragana).unwrap_or_default().into_raw()
     }
 }
 

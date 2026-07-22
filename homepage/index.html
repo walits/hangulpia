@@ -406,12 +406,12 @@
       <div>
         <p class="eyebrow i18n" data-en="Live Now" data-ko="지금, 첫 한 걸음">Live Now</p>
         <h2 class="i18n-html" style="font-size:clamp(2rem,3.6vw + 1rem,3.25rem)" data-en-html="First up: <span class=&quot;spark-text&quot;>Japanese</span>" data-ko-html="첫 언어는 <span class=&quot;spark-text&quot;>일본어</span>입니다">First up: <span class="spark-text">Japanese</span></h2>
-        <p class="lede i18n" data-en="Type on your regular Dubeolsik keyboard, get real-time Hiragana. A statistical engine trained on real usage fills in the idioms no plain rulebook could ever catch." data-ko="쓰던 두벌식 자판 그대로 입력하면, 실시간으로 히라가나가 완성됩니다. 규칙만으로는 잡히지 않는 관용 표기까지, 11만 문장을 학습한 통계 엔진이 채웁니다.">Type on your regular Dubeolsik keyboard, get real-time Hiragana. A statistical engine trained on real usage fills in the idioms no plain rulebook could ever catch.</p>
+        <p class="lede i18n" data-en="Type on your regular Dubeolsik keyboard, get real-time Hiragana. A statistical engine trained on a 24,914-word vocabulary, plus explicit grammar rules for particles and verb endings, fills in what a plain rulebook alone would miss." data-ko="쓰던 두벌식 자판 그대로 입력하면, 실시간으로 히라가나가 완성됩니다. 2만 5천 단어를 학습한 통계 엔진에, 조사·활용형 문법 규칙까지 더해서 규칙만으로는 잡히지 않는 표기를 보정합니다.">Type on your regular Dubeolsik keyboard, get real-time Hiragana. A statistical engine trained on a 24,914-word vocabulary, plus explicit grammar rules for particles and verb endings, fills in what a plain rulebook alone would miss.</p>
 
         <div class="product-layout" style="margin-top:2.5rem">
           <ul class="feature-list">
             <li class="i18n-html" data-en-html="<b>Real-time conversion</b> — Dubeolsik in, Hiragana out, no retraining needed" data-ko-html="<b>실시간 변환</b> — 두벌식 입력을 그대로 히라가나로, 별도 학습 없이"><b>Real-time conversion</b> — Dubeolsik in, Hiragana out, no retraining needed</li>
-            <li class="i18n-html" data-en-html="<b>Statistically trained</b> — learned from 110k Japanese Wikipedia sentences to catch what rules alone miss" data-ko-html="<b>통계 학습 엔진</b> — 일본어 위키피디아 11만 문장 코퍼스로 학습한 음성 디코더가 규칙만으로 안 되는 표기를 보정"><b>Statistically trained</b> — learned from 110k Japanese Wikipedia sentences to catch what rules alone miss</li>
+            <li class="i18n-html" data-en-html="<b>Statistically trained</b> — a 24,914-word vocabulary plus explicit particle/conjugation grammar rules catch what character-level statistics alone miss" data-ko-html="<b>통계 학습 엔진</b> — 2만 5천 단어 어휘 사전에 조사·활용형 문법 규칙까지 더해, 통계만으로 안 되는 표기를 보정"><b>Statistically trained</b> — a 24,914-word vocabulary plus explicit particle/conjugation grammar rules catch what character-level statistics alone miss</li>
             <li class="i18n-html" data-en-html="<b>Context reranking</b> — reads the whole sentence to pick the most natural candidate" data-ko-html="<b>문맥 재랭킹</b> — 앞뒤 문맥을 함께 보고 가장 자연스러운 후보를 문장 단위로 선택"><b>Context reranking</b> — reads the whole sentence to pick the most natural candidate</li>
             <li class="i18n-html" data-en-html="<b>Built for macOS</b> — native InputMethodKit app, ready today. Windows is next." data-ko-html="<b>macOS 지원</b> — InputMethodKit 네이티브 앱으로 지금 바로 설치, Windows는 준비 중"><b>Built for macOS</b> — native InputMethodKit app, ready today. Windows is next.</li>
           </ul>
@@ -434,7 +434,7 @@
               >
               <div class="terminal-arrow">↓</div>
               <div class="terminal-output" id="mockOutput"></div>
-              <div class="terminal-caption i18n" data-en="Live rule-based preview — the downloaded app adds a 110k-sentence trained model on top of this" data-ko="규칙 기반 실시간 미리보기 — 실제 앱은 여기에 11만 문장 학습 모델까지 더해집니다">Live rule-based preview — the downloaded app adds a 110k-sentence trained model on top of this</div>
+              <div class="terminal-caption i18n" data-en="Live rule-based preview — the downloaded app adds a 24,914-word statistical engine on top of this" data-ko="규칙 기반 실시간 미리보기 — 실제 앱은 여기에 2만 5천 단어 통계 엔진까지 더해집니다">Live rule-based preview — the downloaded app adds a 24,914-word statistical engine on top of this</div>
             </div>
           </div>
         </div>
@@ -787,10 +787,11 @@
       return results;
     }
 
-    // Small "learned corpus" stand-in: the real app resolves these via its
-    // 110k-sentence trained model + context reranking, which is too large to
-    // ship to a browser. Known phrases get their verified reading; anything
-    // else falls through to the same per-syllable rule engine as above.
+    // Small "learned corpus" stand-in: the real app resolves these via a
+    // 24,914-word statistical PhoneticMap (core/crates/db/src/vocab_large.rs),
+    // too large to ship to a browser. Known phrases get their verified
+    // reading; anything else falls through to the per-syllable rule engine.
+    // Kept in sync with KNOWN_WORDS in core/crates/db/src/phonetic_decoder.rs.
     var KNOWN_WORDS = {
       "사쿠라": "さくら",
       "아리가토": "ありがとう",
@@ -804,9 +805,40 @@
       "이타다키마스": "いただきます"
     };
 
+    // Grammatical endings (copula/verb conjugations + the topic particle)
+    // matched as a *suffix*, not just a standalone word, since they almost
+    // always attach directly to the preceding word with no space — e.g.
+    // 나마에와 ("name" + topic particle), not "나마에 와". Otherwise these
+    // get mangled by the voicing rules above (e.g. 데스 → てす instead of
+    // です, since ㄷ favors unvoiced "t" 60/40). Longest match wins — order
+    // matters, and 와 (topic particle は) must stay last since it's shortest.
+    //
+    // Trade-off: a genuine word ending in わ (e.g. 카와 "river") will be
+    // mis-converted to は — accepted since the particle usage is far more
+    // common in casual phrases. Kept in sync with KNOWN_SUFFIXES in
+    // core/crates/db/src/phonetic_decoder.rs.
+    var KNOWN_SUFFIXES = [
+      ["데스카", "ですか"],
+      ["데스요", "ですよ"],
+      ["데스네", "ですね"],
+      ["데스", "です"],
+      ["마스카", "ますか"],
+      ["마시타", "ました"],
+      ["마스", "ます"],
+      ["와", "は"]
+    ];
+
     function convertWord(word) {
       var known = KNOWN_WORDS[word];
       if (known) return known;
+
+      for (var s = 0; s < KNOWN_SUFFIXES.length; s++) {
+        var suffix = KNOWN_SUFFIXES[s][0];
+        var reading = KNOWN_SUFFIXES[s][1];
+        if (word.length >= suffix.length && word.slice(-suffix.length) === suffix) {
+          return convertWord(word.slice(0, -suffix.length)) + reading;
+        }
+      }
 
       var out = "";
       for (var i = 0; i < word.length; i++) {
