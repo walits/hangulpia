@@ -402,7 +402,7 @@
         </div>
 
         <div class="hero-cta" style="margin-top:2.5rem">
-          <a class="btn btn-primary i18n" data-en="Download for macOS" data-ko="macOS용 다운로드" href="./downloads/HangulJapaneseIME-latest.zip">Download for macOS</a>
+          <a class="btn btn-primary i18n" data-en="Download for macOS" data-ko="macOS용 다운로드" href="./downloads/HangulJapaneseIME-latest.zip" data-track-download="macos">Download for macOS</a>
           <span class="btn btn-disabled i18n" data-en="Windows — coming soon" data-ko="Windows — 준비 중" aria-disabled="true">Windows — coming soon</span>
           <span class="btn-ghost spark-border"><a class="spark-inner i18n" data-en="See what's next" data-ko="다음 언어 보기" href="#roadmap">See what's next</a></span>
         </div>
@@ -506,6 +506,23 @@
 </footer>
 
 <script>
+  (function () {
+    var ENDPOINT = 'https://b0fmoqtaj5.execute-api.ap-northeast-2.amazonaws.com/track';
+    document.querySelectorAll('[data-track-download]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        var platform = el.getAttribute('data-track-download');
+        try {
+          fetch(ENDPOINT, {
+            method: 'POST',
+            keepalive: true,
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ platform: platform }),
+          });
+        } catch (e) {}
+      });
+    });
+  })();
+
   (function () {
     var toggle = document.getElementById('themeToggle');
     var root = document.documentElement;
