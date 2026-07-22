@@ -202,20 +202,47 @@
   .feature-list li::before { content: "♥"; position: absolute; left: 0; top: 0.05em; font-size: 0.85rem; color: var(--accent2); }
   .feature-list b { color: var(--ink); font-weight: 800; }
 
-  .mock-card.spark-border { border-radius: 24px; }
-  .mock-card .spark-inner { border-radius: 22px; overflow: hidden; }
-  .mock-titlebar { display: flex; align-items: center; gap: 0.4rem; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--line); background: var(--surface-2); }
-  .mock-titlebar i { width: 9px; height: 9px; border-radius: 50%; background: var(--line-strong); display: block; }
-  .mock-titlebar span { margin-left: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.64rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
-  .mock-body { padding: 1.9rem 1.6rem 2.3rem; }
-  .mock-field { border: 1px solid var(--line-strong); border-radius: 14px; padding: 0.95rem 1.1rem; font-size: 1.05rem; min-height: 1.4em; background: var(--bg); }
-  .mock-try-label { display: block; font-family: ui-monospace, monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); margin-bottom: 0.6rem; }
-  .mock-try-input { width: 100%; color: var(--ink); font-family: inherit; outline: none; -webkit-appearance: none; appearance: none; transition: border-color .15s ease, box-shadow .15s ease; }
-  .mock-try-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-  .mock-try-input::placeholder { color: var(--ink-soft); }
-  .mock-arrow { text-align: center; color: var(--ink-soft); font-size: 0.85rem; margin: 0.8rem 0; font-family: ui-monospace, monospace; }
-  .mock-output { font-size: 1.4rem; font-weight: 800; min-height: 1.4em; color: var(--accent2); text-shadow: 0 0 16px var(--accent2-soft); word-break: break-all; }
-  .mock-caption { margin-top: 1.3rem; font-family: ui-monospace, monospace; font-size: 0.64rem; color: var(--ink-soft); text-transform: uppercase; line-height: 1.5; }
+  /* Fixed dark palette, deliberately independent of --bg/--accent so this
+     reads as a standalone running program rather than page decoration. */
+  .terminal {
+    --t-bg: #12141b;
+    --t-surface: #1a1d27;
+    --t-ink: #e9edf5;
+    --t-ink-soft: #8992a6;
+    --t-accent: #38bdf8;
+    --t-accent-soft: rgba(56, 189, 248, 0.16);
+    --t-line: rgba(233, 237, 245, 0.12);
+    background: var(--t-bg);
+    border: 1px solid var(--t-line);
+    border-radius: 22px;
+    box-shadow: 0 28px 70px -30px rgba(0,0,0,0.6), 0 0 0 1px rgba(56,189,248,0.12), 0 0 44px -14px rgba(56,189,248,0.28);
+    overflow: hidden;
+  }
+  .terminal-titlebar { display: flex; align-items: center; gap: 0.45rem; padding: 0.85rem 1.1rem; border-bottom: 1px solid var(--t-line); background: var(--t-surface); }
+  .terminal-titlebar i { width: 9px; height: 9px; border-radius: 50%; display: block; }
+  .terminal-titlebar i.dot-red { background: #ff5f57; }
+  .terminal-titlebar i.dot-yellow { background: #febc2e; }
+  .terminal-titlebar i.dot-green { background: #28c840; }
+  .terminal-titlebar span { margin-left: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.64rem; color: var(--t-ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+  .terminal-body { padding: 1.9rem 1.6rem 2.3rem; }
+  .terminal-label { display: block; font-family: ui-monospace, monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--t-ink-soft); margin-bottom: 0.6rem; }
+  .terminal-field {
+    width: 100%; border: 1px solid var(--t-line); border-radius: 14px; padding: 0.95rem 1.1rem;
+    font-size: 1.05rem; background: var(--t-bg); color: var(--t-ink); font-family: ui-monospace, monospace;
+    outline: none; -webkit-appearance: none; appearance: none; resize: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .terminal-field:focus { border-color: var(--t-accent); box-shadow: 0 0 0 3px var(--t-accent-soft); }
+  .terminal-field::placeholder { color: var(--t-ink-soft); }
+  .terminal-arrow { text-align: center; color: var(--t-ink-soft); font-size: 0.85rem; margin: 0.8rem 0; font-family: ui-monospace, monospace; }
+  .terminal-output { font-size: 1.4rem; font-weight: 700; min-height: 1.4em; color: var(--t-accent); text-shadow: 0 0 18px var(--t-accent-soft); word-break: break-all; font-family: ui-monospace, monospace; }
+  .terminal-caption { margin-top: 1.3rem; font-family: ui-monospace, monospace; font-size: 0.64rem; color: var(--t-ink-soft); text-transform: uppercase; line-height: 1.5; }
+
+  .playground { margin-top: 1.75rem; }
+  .playground .terminal-body { padding: 2.4rem clamp(1.6rem, 4vw, 3rem) 2.8rem; }
+  .playground .terminal-field { font-size: 1.35rem; line-height: 1.6; padding: 1.2rem 1.4rem; min-height: 6.5rem; }
+  .playground .terminal-label { font-size: 0.8rem; }
+  .playground .terminal-output { font-size: 2.1rem; line-height: 1.4; }
 
   /* ---------- roadmap: photocard grid ---------- */
   .precedent { border-left: 3px solid var(--accent2); padding: 1rem 0 1rem 1.25rem; margin: 2rem 0 2.75rem; max-width: 42em; color: var(--ink-soft); font-size: 0.98rem; border-radius: 0 12px 12px 0; background: var(--accent2-soft); }
@@ -389,28 +416,46 @@
             <li class="i18n-html" data-en-html="<b>Built for macOS</b> — native InputMethodKit app, ready today. Windows is next." data-ko-html="<b>macOS 지원</b> — InputMethodKit 네이티브 앱으로 지금 바로 설치, Windows는 준비 중"><b>Built for macOS</b> — native InputMethodKit app, ready today. Windows is next.</li>
           </ul>
 
-          <div class="spark-border mock-card">
-            <div class="spark-inner">
-              <div class="mock-titlebar"><i></i><i></i><i></i><span>hangul → hiragana</span></div>
-              <div class="mock-body">
-                <label class="mock-try-label i18n" for="tryInput" data-en="Type Hangul below — try it yourself" data-ko="아래에 한글을 입력해보세요">Type Hangul below — try it yourself</label>
-                <input
-                  id="tryInput"
-                  class="mock-field mock-try-input i18n-placeholder"
-                  type="text"
-                  autocomplete="off"
-                  autocapitalize="off"
-                  spellcheck="false"
-                  data-en-placeholder="e.g. 사쿠라, 아리가토"
-                  data-ko-placeholder="예: 사쿠라, 아리가토"
-                  placeholder="e.g. 사쿠라, 아리가토"
-                  value="아리가토"
-                >
-                <div class="mock-arrow">↓</div>
-                <div class="mock-output" id="mockOutput"></div>
-                <div class="mock-caption i18n" data-en="Live rule-based preview — the downloaded app adds a 110k-sentence trained model on top of this" data-ko="규칙 기반 실시간 미리보기 — 실제 앱은 여기에 11만 문장 학습 모델까지 더해집니다">Live rule-based preview — the downloaded app adds a 110k-sentence trained model on top of this</div>
-              </div>
+          <div class="terminal mock-card">
+            <div class="terminal-titlebar"><i class="dot-red"></i><i class="dot-yellow"></i><i class="dot-green"></i><span>hangul → hiragana</span></div>
+            <div class="terminal-body">
+              <label class="terminal-label i18n" for="tryInput" data-en="Type Hangul below — try it yourself" data-ko="아래에 한글을 입력해보세요">Type Hangul below — try it yourself</label>
+              <input
+                id="tryInput"
+                class="terminal-field i18n-placeholder"
+                type="text"
+                autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
+                data-en-placeholder="e.g. 사쿠라, 아리가토"
+                data-ko-placeholder="예: 사쿠라, 아리가토"
+                placeholder="e.g. 사쿠라, 아리가토"
+                value="아리가토"
+              >
+              <div class="terminal-arrow">↓</div>
+              <div class="terminal-output" id="mockOutput"></div>
+              <div class="terminal-caption i18n" data-en="Live rule-based preview — the downloaded app adds a 110k-sentence trained model on top of this" data-ko="규칙 기반 실시간 미리보기 — 실제 앱은 여기에 11만 문장 학습 모델까지 더해집니다">Live rule-based preview — the downloaded app adds a 110k-sentence trained model on top of this</div>
             </div>
+          </div>
+        </div>
+
+        <div class="terminal playground">
+          <div class="terminal-titlebar"><i class="dot-red"></i><i class="dot-yellow"></i><i class="dot-green"></i><span>hangul → hiragana · sentence mode</span></div>
+          <div class="terminal-body">
+            <label class="terminal-label i18n" for="playgroundInput" data-en="Practice a longer sentence" data-ko="더 긴 문장으로 연습해보세요">Practice a longer sentence</label>
+            <textarea
+              id="playgroundInput"
+              class="terminal-field i18n-placeholder"
+              rows="3"
+              autocomplete="off"
+              autocapitalize="off"
+              spellcheck="false"
+              data-en-placeholder="Type a full Hangul sentence here..."
+              data-ko-placeholder="여기에 더 긴 한글 문장을 입력해보세요..."
+              placeholder="Type a full Hangul sentence here..."
+            >오하요 하지메마시테 아리가토고자이마스</textarea>
+            <div class="terminal-arrow">↓</div>
+            <div class="terminal-output" id="playgroundOutput"></div>
           </div>
         </div>
 
@@ -759,30 +804,39 @@
       "이타다키마스": "いただきます"
     };
 
-    function hangulToHiragana(str) {
-      var known = KNOWN_WORDS[str];
+    function convertWord(word) {
+      var known = KNOWN_WORDS[word];
       if (known) return known;
 
       var out = "";
-      for (var i = 0; i < str.length; i++) {
-        var ch = str[i];
+      for (var i = 0; i < word.length; i++) {
+        var ch = word[i];
         var candidates = hangulCharToHiraganaFallback(ch);
         out += candidates.length > 0 ? candidates[0][0] : ch;
       }
       return out;
     }
 
-    var input = document.getElementById('tryInput');
-    var output = document.getElementById('mockOutput');
-    if (!input || !output) return;
-
-    function render() {
-      var value = input.value.trim();
-      output.textContent = value ? hangulToHiragana(value) : '';
+    function hangulToHiragana(str) {
+      return str.split(/(\s+)/).map(function (part) {
+        return /\s+/.test(part) ? part : convertWord(part);
+      }).join('');
     }
 
-    input.addEventListener('input', render);
-    render();
+    function wire(inputId, outputId) {
+      var el = document.getElementById(inputId);
+      var out = document.getElementById(outputId);
+      if (!el || !out) return;
+      var render = function () {
+        var value = el.value.trim();
+        out.textContent = value ? hangulToHiragana(value) : '';
+      };
+      el.addEventListener('input', render);
+      render();
+    }
+
+    wire('tryInput', 'mockOutput');
+    wire('playgroundInput', 'playgroundOutput');
   })();
 
   (function () {
