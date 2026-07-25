@@ -200,6 +200,24 @@
   .feature-list li::before { content: "♥"; position: absolute; left: 0; top: 0.05em; font-size: 0.85rem; color: var(--accent2); }
   .feature-list b { color: var(--ink); font-weight: 800; }
 
+  /* ---------- install steps ---------- */
+  .install-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.4rem; margin-top: 2.5rem; }
+  .install-step { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.5rem 1.4rem; }
+  .install-step-num {
+    width: 2rem; height: 2rem; border-radius: 999px; background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem;
+    margin-bottom: 0.9rem; box-shadow: 0 6px 16px -6px rgba(var(--shadow-color), 0.6);
+  }
+  .install-step h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .install-step p { margin: 0; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.65; }
+  .install-step p b { color: var(--ink); }
+  .terminal.install-terminal { margin-top: 0.9rem; border-radius: 14px; }
+  .install-terminal .terminal-titlebar { padding: 0.55rem 0.85rem; }
+  .install-terminal .terminal-body { padding: 0.9rem 1.1rem; }
+  .install-terminal code { color: var(--t-accent); font-family: ui-monospace, monospace; font-size: 0.92rem; }
+  .install-note { margin-top: 1.75rem; font-size: 0.9rem; color: var(--ink-soft); }
+  .install-note code { font-family: ui-monospace, monospace; background: var(--surface-2); padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.85rem; }
+
   /* Fixed dark palette, deliberately independent of --bg/--accent so this
      reads as a standalone running program rather than page decoration. */
   .terminal {
@@ -442,9 +460,54 @@
     </div>
   </section>
 
-  <section id="roadmap">
+  <section id="install">
     <div class="wrap grid-frame">
       <div class="track-label">TRACK<b>04</b></div>
+      <div>
+        <p class="eyebrow i18n" data-en="Setup" data-ko="설치 방법">Setup</p>
+        <h2 class="i18n" data-en="Up and running in 3 minutes" data-ko="3분이면 설치 끝">Up and running in 3 minutes</h2>
+        <p class="lede i18n" data-en="No App Store, so macOS needs a few extra steps to trust it. Do these once, in order." data-ko="앱스토어 앱이 아니라서 macOS가 신뢰하도록 몇 단계가 더 필요해요. 순서대로 한 번만 하면 됩니다.">No App Store, so macOS needs a few extra steps to trust it. Do these once, in order.</p>
+
+        <div class="install-steps">
+          <div class="install-step">
+            <div class="install-step-num">1</div>
+            <h3 class="i18n" data-en="Unzip" data-ko="압축 풀기">Unzip</h3>
+            <p class="i18n" data-en="Double-click the downloaded file in your Downloads folder." data-ko="다운로드 폴더에서 받은 파일을 더블클릭하면 자동으로 풀립니다.">Double-click the downloaded file in your Downloads folder.</p>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">2</div>
+            <h3 class="i18n" data-en="Run the installer" data-ko="설치 스크립트 실행">Run the installer</h3>
+            <p class="i18n" data-en="Open Terminal, drag the unzipped folder onto the window to jump there, then run:" data-ko="터미널을 열고, 압축 푼 폴더를 터미널 창에 드래그해서 이동한 다음 아래 명령어를 실행하세요:">Open Terminal, drag the unzipped folder onto the window to jump there, then run:</p>
+            <div class="terminal install-terminal">
+              <div class="terminal-titlebar"><i class="dot-red"></i><i class="dot-yellow"></i><i class="dot-green"></i><span>terminal</span></div>
+              <div class="terminal-body"><code>bash install.sh</code></div>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">3</div>
+            <h3 class="i18n" data-en="Log out, log back in" data-ko="로그아웃 후 재로그인">Log out, log back in</h3>
+            <p class="i18n" data-en="This is how macOS notices the new keyboard exists. A restart also works." data-ko="macOS가 새 입력기를 인식하려면 이 과정이 필요해요. 재시동해도 됩니다.">This is how macOS notices the new keyboard exists. A restart also works.</p>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">4</div>
+            <h3 class="i18n" data-en="Add the input source" data-ko="입력 소스 추가">Add the input source</h3>
+            <p class="i18n-html" data-en-html="<b>System Settings → Keyboard → Input Sources → Edit → +</b>, find <b>Japanese</b>, add <b>HangulJapaneseIME</b>." data-ko-html="<b>시스템 설정 → 키보드 → 입력 소스 편집 → +</b>, <b>일본어</b> 카테고리에서 <b>한글일본어입력기</b>를 추가하세요."><b>System Settings → Keyboard → Input Sources → Edit → +</b>, find <b>Japanese</b>, add <b>HangulJapaneseIME</b>.</p>
+          </div>
+          <div class="install-step">
+            <div class="install-step-num">5</div>
+            <h3 class="i18n" data-en="Switch and type" data-ko="전환하고 입력 시작">Switch and type</h3>
+            <p class="i18n" data-en="Click the input source icon in the menu bar, pick it, and type Dubeolsik like always." data-ko="메뉴바 입력 소스 아이콘을 눌러 선택하고, 평소처럼 두벌식으로 입력하면 됩니다.">Click the input source icon in the menu bar, pick it, and type Dubeolsik like always.</p>
+          </div>
+        </div>
+
+        <p class="install-note i18n-html" data-en-html="Want it gone? Same folder, run <code>bash uninstall.sh</code>." data-ko-html="제거하고 싶으면 같은 폴더에서 <code>bash uninstall.sh</code>를 실행하세요.">Want it gone? Same folder, run <code>bash uninstall.sh</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="wrap grid-frame">
+      <div class="track-label">TRACK<b>05</b></div>
       <div>
         <p class="eyebrow i18n" data-en="One Script, Every Language" data-ko="한 문자, 모든 언어">One Script, Every Language</p>
         <h2 class="i18n" data-en="What's next?" data-ko="다음은 어떤 언어입니까">What's next?</h2>
