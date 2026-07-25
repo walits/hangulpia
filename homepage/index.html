@@ -218,6 +218,24 @@
   .install-note { margin-top: 1.75rem; font-size: 0.9rem; color: var(--ink-soft); }
   .install-note code { font-family: ui-monospace, monospace; background: var(--surface-2); padding: 0.15rem 0.4rem; border-radius: 6px; font-size: 0.85rem; }
 
+  /* ---------- marker tutorial ---------- */
+  .marker-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.4rem; margin-top: 2.5rem; }
+  .marker-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.6rem 1.5rem; }
+  .marker-symbol {
+    width: 2.6rem; height: 2.6rem; border-radius: 12px; background: var(--surface-2); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.35rem;
+    font-family: ui-monospace, monospace; margin-bottom: 0.9rem;
+  }
+  .marker-card h3 { font-size: 1.05rem; margin-bottom: 0.5rem; }
+  .marker-card p { margin: 0 0 1.2rem; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.65; }
+  .marker-examples { display: grid; gap: 0.55rem; }
+  .marker-example {
+    display: flex; align-items: center; gap: 0.7rem; font-family: ui-monospace, monospace; font-size: 0.95rem;
+    background: var(--surface-2); border-radius: 10px; padding: 0.6rem 0.85rem;
+  }
+  .marker-example .arrow { color: var(--ink-soft); font-size: 0.8rem; }
+  .marker-example .result { color: var(--accent2); font-weight: 700; margin-left: auto; }
+
   /* Fixed dark palette, deliberately independent of --bg/--accent so this
      reads as a standalone running program rather than page decoration. */
   .terminal {
@@ -505,9 +523,43 @@
     </div>
   </section>
 
-  <section id="roadmap">
+  <section id="tutorial">
     <div class="wrap grid-frame">
       <div class="track-label">TRACK<b>05</b></div>
+      <div>
+        <p class="eyebrow i18n" data-en="Fine control" data-ko="세밀하게 조정하기">Fine control</p>
+        <h2 class="i18n" data-en="When the engine guesses wrong, correct it" data-ko="엔진이 잘못 짐작할 때는 직접 알려주세요">When the engine guesses wrong, correct it</h2>
+        <p class="lede i18n" data-en="The engine is statistical, not a fixed rulebook — so it occasionally misses a long vowel or picks the unvoiced version of a consonant. Two markers let you override it, syllable by syllable, without retraining anything." data-ko="이 엔진은 고정된 규칙표가 아니라 통계로 판단하기 때문에, 가끔 장음을 놓치거나 탁음 대신 청음을 고를 때가 있어요. 아래 두 마커를 음절 바로 뒤에 붙이면, 재학습 없이 그 자리에서 직접 바로잡을 수 있습니다.">The engine is statistical, not a fixed rulebook — so it occasionally misses a long vowel or picks the unvoiced version of a consonant. Two markers let you override it, syllable by syllable, without retraining anything.</p>
+
+        <div class="marker-grid">
+          <div class="marker-card">
+            <div class="marker-symbol">~</div>
+            <h3 class="i18n" data-en="Long vowel (장음)" data-ko="장음 (長音)">Long vowel (장음)</h3>
+            <p class="i18n" data-en="Attach right after a syllable to stretch its vowel sound." data-ko="음절 바로 뒤에 붙이면 그 음절의 모음을 길게 늘립니다.">Attach right after a syllable to stretch its vowel sound.</p>
+            <div class="marker-examples">
+              <div class="marker-example"><span>도</span><span class="arrow">→</span><span class="result">ど</span></div>
+              <div class="marker-example"><span>도~</span><span class="arrow">→</span><span class="result">どう</span></div>
+            </div>
+          </div>
+          <div class="marker-card">
+            <div class="marker-symbol">^</div>
+            <h3 class="i18n" data-en="Dakuten (탁음)" data-ko="탁음 (濁音)">Dakuten (탁음)</h3>
+            <p class="i18n" data-en="Attach right after a syllable to force its voiced consonant (か→が, さ→ざ, た→だ, は→ば)." data-ko="음절 바로 뒤에 붙이면 그 음절의 자음을 탁음으로 바꿉니다 (か→が, さ→ざ, た→だ, は→ば).">Attach right after a syllable to force its voiced consonant (か→が, さ→ざ, た→だ, は→ば).</p>
+            <div class="marker-examples">
+              <div class="marker-example"><span>카</span><span class="arrow">→</span><span class="result">か</span></div>
+              <div class="marker-example"><span>카^</span><span class="arrow">→</span><span class="result">が</span></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="install-note i18n-html" data-en-html="Stack both on the same syllable: <code>카^~</code> → <code>があ</code>. Everything else in the sentence still goes through the trained engine as usual — markers only touch the syllable they're attached to." data-ko-html="한 음절에 둘 다 쓸 수도 있어요: <code>카^~</code> → <code>があ</code>. 문장의 나머지 부분은 평소처럼 학습된 엔진이 그대로 처리합니다 — 마커는 붙은 음절에만 영향을 줍니다.">Stack both on the same syllable: <code>카^~</code> → <code>があ</code>. Everything else in the sentence still goes through the trained engine as usual — markers only touch the syllable they're attached to.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="roadmap">
+    <div class="wrap grid-frame">
+      <div class="track-label">TRACK<b>06</b></div>
       <div>
         <p class="eyebrow i18n" data-en="One Script, Every Language" data-ko="한 문자, 모든 언어">One Script, Every Language</p>
         <h2 class="i18n" data-en="What's next?" data-ko="다음은 어떤 언어입니까">What's next?</h2>

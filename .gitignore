@@ -3,6 +3,9 @@ target/
 **/*.rs.bk
 Cargo.lock
 
+# Swift Package Manager
+.build/
+
 # IDE
 .vscode/
 .idea/

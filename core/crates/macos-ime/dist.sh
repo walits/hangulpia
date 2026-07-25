@@ -3,13 +3,13 @@
 # dist.sh — 배포용 zip 패키지 생성
 #
 # 사용법: ./dist.sh
-# 결과:   dist/HangulJapaneseIME-v0.1.6-arm64.zip
+# 결과:   dist/HangulJapaneseIME-v0.1.7-arm64.zip
 #
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-VERSION="0.1.6"
+VERSION="0.1.7"
 DIST_DIR="$SCRIPT_DIR/dist"
 PKG_NAME="HangulJapaneseIME-v${VERSION}-arm64"
 
@@ -33,7 +33,7 @@ chmod +x "$DIST_DIR/$PKG_NAME/install.sh" "$DIST_DIR/$PKG_NAME/uninstall.sh"
 # 3. Create README
 cat > "$DIST_DIR/$PKG_NAME/README.txt" << 'EOF'
 ═══════════════════════════════════════════════════════════
-  한글일본어입력기 (HangulJapaneseIME) v0.1.6
+  한글일본어입력기 (HangulJapaneseIME) v0.1.7
   한글 자판으로 일본어를 입력하는 macOS 입력기
 ═══════════════════════════════════════════════════════════
 
@@ -44,7 +44,7 @@ cat > "$DIST_DIR/$PKG_NAME/README.txt" << 'EOF'
   ■ 설치 방법
     1. 터미널 열기 (Spotlight → "터미널" 검색)
     2. 이 폴더로 이동:
-       cd ~/Downloads/HangulJapaneseIME-v0.1.6-arm64
+       cd ~/Downloads/HangulJapaneseIME-v0.1.7-arm64
     3. 설치 실행:
        bash install.sh
     4. 로그아웃 → 재로그인
@@ -71,6 +71,17 @@ cat > "$DIST_DIR/$PKG_NAME/README.txt" << 'EOF'
       백스페이스       → 한 글자 삭제
       Esc             → 입력 취소
       숫자 1-9        → 후보 직접 선택
+
+  ■ 장음·탁음이 이상하게 나올 때
+    자동 변환이 가끔 장음(う/い 연장)을 빠뜨리거나 탁음(が/ざ/だ/ば)을
+    반대로 낼 수 있습니다. 이럴 땐 원하는 글자 바로 뒤에 마커를 붙여서
+    직접 지정할 수 있습니다:
+
+      ~  장음 추가 (도쿄~  → どきょう)
+      ^  탁음으로 전환 (카^  → が)
+
+    둘을 같이 쓸 수도 있습니다 (카^~ → があ). 자세한 설명과 예시는
+    https://hangulpia.com/#tutorial 참고.
 
   ■ 제거 방법
       bash uninstall.sh

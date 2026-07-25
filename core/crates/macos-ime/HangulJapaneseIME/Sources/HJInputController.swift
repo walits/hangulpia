@@ -165,6 +165,14 @@ class HJInputController: IMKInputController {
             if let jamo = qwertyToJamo(ch) {
                 return handleJamo(jamo, client: client)
             }
+            // Third check: ~/^ markers (long vowel / dakuten), only while
+            // mid-composition — otherwise they're just the literal symbols.
+            // recomposeHangul()'s "unknown — pass through" branch carries
+            // them into hangulBuffer as-is, where the Rust engine's marker
+            // handling (phonetic_decoder.rs) picks them up. See docs/MODEL.md.
+            if (ch == "~" || ch == "^") && !jamoBuffer.isEmpty {
+                return handleJamo(ch, client: client)
+            }
         }
 
         // ── Non-hangul character — commit and pass through ─

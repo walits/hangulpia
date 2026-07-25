@@ -394,6 +394,21 @@ impl<'a> BeamDecoder<'a> {
         if word.is_empty() {
             return String::new();
         }
+        // Explicit markers (~long vowel, ^dakuten) give the user deterministic
+        // control over exactly the two things the statistical/rule engine is
+        // least reliable on. A word using either marker skips the normal
+        // KNOWN_WORDS/KNOWN_SUFFIXES/PhoneticMap path entirely and is decoded
+        // syllable-by-syllable with the markers applied — see decode_word_with_markers.
+        //
+        // This is deliberately NOT the same design the research paper's 4.10
+        // experiment used (which fed a literal "~" character into the
+        // corpus-trained decoder and made things worse because that token
+        // never appeared in training data). Markers here never reach the
+        // statistical layer at all — they're stripped and applied as a
+        // separate, deterministic post-processing step.
+        if word.contains('~') || word.contains('^') {
+            return decode_word_with_markers(self.map, word);
+        }
         if let Some(reading) = KNOWN_WORDS.iter().find(|(w, _)| *w == word) {
             return reading.1.to_string();
         }
@@ -458,6 +473,112 @@ const KNOWN_SUFFIXES: &[(&str, &str)] = &[
     ("와", "は"), // topic particle は, pronounced "wa" — see trade-off note above
     ("가", "が"), // subject particle が — ㄱ's default weight favors unvoiced "k" (か), same trade-off as 와/は above
 ];
+
+/// Best single-syllable reading for the marker path: prefer the trained
+/// PhoneticMap's opinion for this exact hangul character if it has one
+/// (keeping marker output consistent with how this same syllable would
+/// normally be decoded elsewhere in a sentence), otherwise fall back to the
+/// static rule table.
+fn base_reading_for_marker(map: &PhoneticMap, ch: char) -> String {
+    let key = ch.to_string();
+    if let Some(candidates) = map.get_candidates(&key) {
+        if let Some(top) = candidates.first() {
+            return top.hiragana.clone();
+        }
+    }
+    hangul_char_to_hiragana_fallback(ch)
+        .into_iter()
+        .next()
+        .map(|(h, _)| h)
+        .unwrap_or_else(|| ch.to_string())
+}
+
+/// Decode a word containing `~`/`^` markers: syllable-by-syllable, with each
+/// marker applied deterministically to the syllable it immediately follows.
+/// `~` = extend with the standard long-vowel partner (あ→あ, い→い, う→う,
+/// え→い, お→う — the common convention; real exceptions like おおきい aren't
+/// covered). `^` = voice the syllable's leading consonant (dakuten: か→が,
+/// さ→ざ, た→だ, は→ば); syllables without a dakuten form are left as-is.
+/// Both markers may follow the same syllable, in either order.
+fn decode_word_with_markers(map: &PhoneticMap, word: &str) -> String {
+    let chars: Vec<char> = word.chars().collect();
+    let mut out = String::new();
+    let mut i = 0;
+    while i < chars.len() {
+        let ch = chars[i];
+        if ch == '~' || ch == '^' {
+            // Stray marker with nothing to attach to — drop it.
+            i += 1;
+            continue;
+        }
+        i += 1;
+        let mut long_vowel = false;
+        let mut dakuten = false;
+        while i < chars.len() && (chars[i] == '~' || chars[i] == '^') {
+            if chars[i] == '~' {
+                long_vowel = true;
+            } else {
+                dakuten = true;
+            }
+            i += 1;
+        }
+
+        let mut hira = base_reading_for_marker(map, ch);
+
+        if dakuten {
+            hira = apply_dakuten(&hira);
+        }
+        if long_vowel {
+            if let Some(ext) = long_vowel_extension(&hira) {
+                hira.push(ext);
+            }
+        }
+        out.push_str(&hira);
+    }
+    out
+}
+
+/// Voice a hiragana syllable's leading character (か→が, さ→ざ, た→だ, は→ば).
+/// Already-voiced or non-voiceable syllables (あ行, な行, ま行, や行, ら行,
+/// わ行, ん) are returned unchanged.
+fn apply_dakuten(hira: &str) -> String {
+    const DAKUTEN: &[(char, char)] = &[
+        ('か', 'が'), ('き', 'ぎ'), ('く', 'ぐ'), ('け', 'げ'), ('こ', 'ご'),
+        ('さ', 'ざ'), ('し', 'じ'), ('す', 'ず'), ('せ', 'ぜ'), ('そ', 'ぞ'),
+        ('た', 'だ'), ('ち', 'ぢ'), ('つ', 'づ'), ('て', 'で'), ('と', 'ど'),
+        ('は', 'ば'), ('ひ', 'び'), ('ふ', 'ぶ'), ('へ', 'べ'), ('ほ', 'ぼ'),
+    ];
+    let mut chars: Vec<char> = hira.chars().collect();
+    if let Some(first) = chars.first_mut() {
+        if let Some((_, voiced)) = DAKUTEN.iter().find(|(plain, _)| plain == first) {
+            *first = *voiced;
+        }
+    }
+    chars.into_iter().collect()
+}
+
+/// The standard long-vowel partner for a hiragana syllable's final vowel
+/// sound, based on its trailing character (あ→a, い→i, う→u, え→e, お→o rows,
+/// including dakuten/handakuten/youon-final forms).
+fn long_vowel_extension(hira: &str) -> Option<char> {
+    let last = hira.chars().last()?;
+    let vowel = match last {
+        'あ' | 'か' | 'が' | 'さ' | 'ざ' | 'た' | 'だ' | 'な' | 'は' | 'ば' | 'ぱ' | 'ま' | 'や' | 'ゃ' | 'ら' | 'わ' => 'a',
+        'い' | 'き' | 'ぎ' | 'し' | 'じ' | 'ち' | 'ぢ' | 'に' | 'ひ' | 'び' | 'ぴ' | 'み' | 'り' => 'i',
+        'う' | 'く' | 'ぐ' | 'す' | 'ず' | 'つ' | 'づ' | 'ぬ' | 'ふ' | 'ぶ' | 'ぷ' | 'む' | 'ゆ' | 'ゅ' | 'る' => 'u',
+        'え' | 'け' | 'げ' | 'せ' | 'ぜ' | 'て' | 'で' | 'ね' | 'へ' | 'べ' | 'ぺ' | 'め' | 'れ' => 'e',
+        'お' | 'こ' | 'ご' | 'そ' | 'ぞ' | 'と' | 'ど' | 'の' | 'ほ' | 'ぼ' | 'ぽ' | 'も' | 'よ' | 'ょ' | 'ろ' | 'を' => 'o',
+        _ => return None, // ん, っ, etc. — no well-defined extension
+    };
+    Some(match vowel {
+        'a' => 'あ',
+        'i' => 'い',
+        'u' => 'う',
+        'e' => 'い', // standard convention (せんせい, not せんせえ)
+        'o' => 'う', // standard convention (とうきょう, not とおきょう)
+        _ => unreachable!(),
+    })
+}
 
 /// Rule-based fallback: decompose a single Hangul syllable into hiragana candidates.
 ///
@@ -1565,6 +1686,35 @@ mod tests {
         let decoder = empty_decoder();
         assert_eq!(decoder.decode_sentence("가"), "が");
         assert_eq!(decoder.decode_sentence("이로가"), "いろが");
+    }
+
+    #[test]
+    fn test_long_vowel_marker() {
+        let decoder = empty_decoder();
+        // 도쿄 alone drops the long vowel (ときょ); ~ on the last syllable adds it.
+        assert_eq!(decoder.decode_sentence("도쿄"), "ときょ");
+        assert_eq!(decoder.decode_sentence("도쿄~"), "ときょう");
+        // え-row extends with い by convention, not え.
+        assert_eq!(decoder.decode_sentence("세~"), "せい");
+    }
+
+    #[test]
+    fn test_dakuten_marker() {
+        let decoder = empty_decoder();
+        assert_eq!(decoder.decode_sentence("카^"), "が");
+        assert_eq!(decoder.decode_sentence("교토^"), "きょど");
+    }
+
+    #[test]
+    fn test_markers_combine_and_skip_dictionary() {
+        let decoder = empty_decoder();
+        // Both markers on one syllable, in either order.
+        assert_eq!(decoder.decode_sentence("카^~"), "があ");
+        assert_eq!(decoder.decode_sentence("카~^"), "があ");
+        // A word with a marker bypasses KNOWN_WORDS entirely, even for a
+        // word that would otherwise match exactly — markers mean "trust my
+        // explicit spelling here", not "look this up".
+        assert_eq!(decoder.decode_sentence("사쿠라~"), "さくらあ");
     }
 
     #[test]
