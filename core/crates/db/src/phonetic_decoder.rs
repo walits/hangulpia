@@ -426,6 +426,7 @@ const KNOWN_SUFFIXES: &[(&str, &str)] = &[
     ("마시타", "ました"),
     ("마스", "ます"),
     ("와", "は"), // topic particle は, pronounced "wa" — see trade-off note above
+    ("가", "が"), // subject particle が — ㄱ's default weight favors unvoiced "k" (か), same trade-off as 와/は above
 ];
 
 /// Rule-based fallback: decompose a single Hangul syllable into hiragana candidates.
@@ -1527,6 +1528,13 @@ mod tests {
         // 곤니찌와 is the greeting itself — 와 here isn't a topic particle,
         // so the exact-word dictionary must take priority over the suffix rule.
         assert_eq!(decoder.decode_sentence("곤니찌와"), "こんにちわ");
+    }
+
+    #[test]
+    fn test_ga_particle_is_voiced() {
+        let decoder = empty_decoder();
+        assert_eq!(decoder.decode_sentence("가"), "が");
+        assert_eq!(decoder.decode_sentence("이로가"), "いろが");
     }
 
     #[test]
