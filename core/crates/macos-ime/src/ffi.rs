@@ -12,6 +12,7 @@ use ime_db::phonetic_decoder::{PhoneticMap, BeamDecoder};
 use ime_db::kana_hangul::hiragana_to_hangul;
 use ime_db::vocab::build_vocab;
 use ime_db::vocab_extended::build_extended_vocab;
+use ime_db::vocab_gapfill::build_gapfill_vocab;
 use ime_db::vocab_large::build_vocab_large;
 use ime_db::DictionaryDb;
 
@@ -45,11 +46,14 @@ pub extern "C" fn hj_engine_init(db_path: *const c_char) -> i32 {
     };
 
     // Build vocabulary and populate dictionary.
-    // Combines all three vocab tiers (was: build_vocab() alone, ~730 entries)
-    // for far better real-world coverage.
+    // Combines all four vocab tiers (was: build_vocab() alone, ~730 entries)
+    // for far better real-world coverage. vocab_gapfill fills in common words
+    // (question words, numbers, body parts, ...) missing from the other three
+    // — see docs/MODEL.md section 1.4.
     let mut vocab = build_vocab();
     vocab.extend(build_extended_vocab());
     vocab.extend(build_vocab_large());
+    vocab.extend(build_gapfill_vocab());
     let dict = db.kanji_dict();
     let entries: Vec<(&str, &str, i64)> = vocab
         .iter()

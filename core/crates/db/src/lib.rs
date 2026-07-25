@@ -18,6 +18,7 @@ pub mod ngram;
 pub mod phonetic_decoder;
 pub mod vocab;
 pub mod vocab_extended;
+pub mod vocab_gapfill;
 pub mod vocab_large;
 
 use rusqlite::{Connection, Result as SqlResult};
