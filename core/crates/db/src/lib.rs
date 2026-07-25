@@ -6,14 +6,20 @@
 //! - Token embedding vector storage for sentence-level disambiguation
 //! - Context-aware candidate ranking using cosine similarity
 
+#[cfg(feature = "sqlite")]
 pub mod autocomplete;
 pub mod corpus;
+#[cfg(feature = "sqlite")]
 pub mod dictionary;
+#[cfg(feature = "sqlite")]
 pub mod embedding;
 pub mod generator;
 pub mod kana_hangul;
+#[cfg(feature = "sqlite")]
 pub mod sentence;
+#[cfg(feature = "sqlite")]
 pub mod trainer;
+#[cfg(feature = "sqlite")]
 pub mod ngram;
 pub mod phonetic_decoder;
 pub mod vocab;
@@ -21,17 +27,24 @@ pub mod vocab_extended;
 pub mod vocab_gapfill;
 pub mod vocab_large;
 
+#[cfg(feature = "sqlite")]
 use rusqlite::{Connection, Result as SqlResult};
+#[cfg(feature = "sqlite")]
 use thiserror::Error;
 
+#[cfg(feature = "sqlite")]
 pub use dictionary::{ContextRanker, DirectionalContextRanker, DictEntry, KanjiDict, RankedCandidate};
+#[cfg(feature = "sqlite")]
 pub use embedding::{
     cosine_similarity, average_vectors, weighted_average_vectors,
     EmbeddingStore, WordEmbedding, DEFAULT_EMBEDDING_DIM,
 };
+#[cfg(feature = "sqlite")]
 pub use sentence::{Segment, SentenceBuffer};
+#[cfg(feature = "sqlite")]
 pub use trainer::{DbBuilder, TrainerConfig, BuildStats};
 
+#[cfg(feature = "sqlite")]
 #[derive(Error, Debug)]
 pub enum DbError {
     #[error("SQLite error: {0}")]
@@ -43,10 +56,12 @@ pub enum DbError {
 }
 
 /// Manages the local SQLite database for dictionaries and user data.
+#[cfg(feature = "sqlite")]
 pub struct DictionaryDb {
     conn: Connection,
 }
 
+#[cfg(feature = "sqlite")]
 impl DictionaryDb {
     /// Open (or create) a database at the given path.
     pub fn open(path: &str) -> Result<Self, DbError> {
@@ -149,7 +164,7 @@ impl DictionaryDb {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "sqlite"))]
 mod tests {
     use super::*;
 

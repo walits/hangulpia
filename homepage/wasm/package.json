@@ -1,0 +1,16 @@
+{
+  "name": "ime-wasm",
+  "type": "module",
+  "description": "WASM bindings for the Hangul→Japanese conversion engine (homepage demo)",
+  "version": "0.1.5",
+  "files": [
+    "ime_wasm_bg.wasm",
+    "ime_wasm.js",
+    "ime_wasm.d.ts"
+  ],
+  "main": "ime_wasm.js",
+  "types": "ime_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

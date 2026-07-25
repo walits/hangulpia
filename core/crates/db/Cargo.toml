@@ -6,11 +6,20 @@ edition.workspace = true
 rust-version.workspace = true
 
 [dependencies]
-rusqlite.workspace = true
+rusqlite = { workspace = true, optional = true }
 log.workspace = true
 thiserror.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+
+[features]
+default = ["sqlite"]
+# Gates everything that needs SQLite (DictionaryDb, KanjiDict, embeddings,
+# n-gram persistence, autocomplete, sentence context ranking, trainer).
+# phonetic_decoder/vocab*/kana_hangul/corpus/generator are pure Rust and
+# always available — this lets wasm builds (crates/wasm) skip rusqlite,
+# which doesn't target wasm32-unknown-unknown.
+sqlite = ["dep:rusqlite"]
 
 [dev-dependencies]
 pretty_assertions.workspace = true

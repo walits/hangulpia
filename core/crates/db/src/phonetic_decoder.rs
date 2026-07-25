@@ -337,6 +337,28 @@ impl<'a> BeamDecoder<'a> {
     /// short of that, these are handled as small, explicit exceptions,
     /// applied per word before falling back to normal `decode()`.
     pub fn decode_sentence(&self, hangul: &str) -> String {
+        self.decode_sentence_inner(hangul, None)
+    }
+
+    /// Same as `decode_sentence`, but substitutes kanji surface forms (from
+    /// `kanji`, a reading→surface lookup) wherever the plain rule-fallback
+    /// path was used for a word. Words resolved via `KNOWN_WORDS` or
+    /// `KNOWN_SUFFIXES` are already verified-correct and never re-looked-up.
+    /// Used by the WASM build (`crates/wasm`) so the browser demo can show
+    /// kanji without duplicating this logic in JavaScript.
+    pub fn decode_sentence_with_kanji(
+        &self,
+        hangul: &str,
+        kanji: &std::collections::HashMap<String, String>,
+    ) -> String {
+        self.decode_sentence_inner(hangul, Some(kanji))
+    }
+
+    fn decode_sentence_inner(
+        &self,
+        hangul: &str,
+        kanji: Option<&std::collections::HashMap<String, String>>,
+    ) -> String {
         let mut out = String::new();
         let mut word_start = 0;
         let chars: Vec<char> = hangul.chars().collect();
@@ -347,7 +369,7 @@ impl<'a> BeamDecoder<'a> {
             if at_boundary {
                 if i > word_start {
                     let word: String = chars[word_start..i].iter().collect();
-                    out.push_str(&self.decode_word(&word));
+                    out.push_str(&self.decode_word(&word, kanji));
                 }
                 if i < chars.len() {
                     out.push(chars[i]);
@@ -363,8 +385,12 @@ impl<'a> BeamDecoder<'a> {
     /// context — e.g. 곤니찌와 is the greeting word itself, not "곤니찌" +
     /// topic particle, so it must win over the suffix rule below), then
     /// grammatical suffix exceptions, then the learned PhoneticMap/rule-based
-    /// fallback via `decode()`.
-    fn decode_word(&self, word: &str) -> String {
+    /// fallback via `decode()` (with optional kanji substitution on top).
+    fn decode_word(
+        &self,
+        word: &str,
+        kanji: Option<&std::collections::HashMap<String, String>>,
+    ) -> String {
         if word.is_empty() {
             return String::new();
         }
@@ -376,15 +402,19 @@ impl<'a> BeamDecoder<'a> {
             let suffix_len = suffix.chars().count();
             if word_len >= suffix_len && word.ends_with(suffix) {
                 let prefix: String = word.chars().take(word_len - suffix_len).collect();
-                let prefix_hira = self.decode_word(&prefix);
+                let prefix_hira = self.decode_word(&prefix, kanji);
                 return format!("{}{}", prefix_hira, reading);
             }
         }
-        self.decode(word)
+        let hira = self.decode(word)
             .into_iter()
             .next()
             .map(|(h, _)| h)
-            .unwrap_or_default()
+            .unwrap_or_default();
+        match kanji.and_then(|k| k.get(&hira)) {
+            Some(surface) => surface.clone(),
+            None => hira,
+        }
     }
 }
 

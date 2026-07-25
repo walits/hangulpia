@@ -4,9 +4,10 @@
 어디서 어떻게 구동되는지 정리한 문서입니다. 딥러닝 모델이 아니라 **통계적 음소 정렬
 테이블(PhoneticMap) + 손으로 정리한 문법 예외 규칙**으로 이루어져 있습니다.
 
-- 코드 위치: `core/crates/db/src/phonetic_decoder.rs` (핵심 엔진)
-- 관련 데이터: `core/crates/db/src/vocab.rs`, `vocab_extended.rs`, `vocab_large.rs`
-- 실사용처: macOS 앱(`core/crates/macos-ime`), 홈페이지 데모(`homepage/index.html`)
+- 코드 위치: `core/crates/db/src/phonetic_decoder.rs` (핵심 엔진, 유일한 정답 소스)
+- 관련 데이터: `core/crates/db/src/vocab.rs`, `vocab_extended.rs`, `vocab_large.rs`, `vocab_gapfill.rs`
+- 실사용처: macOS 앱(`core/crates/macos-ime`, C FFI), 홈페이지 데모(`core/crates/wasm` → WASM,
+  **JS 손포팅 아님** — 2026-07-25부터 같은 Rust 코드가 인터페이스만 바꿔 두 곳 다 돌아감)
 
 ---
 
@@ -14,9 +15,9 @@
 
 ```
                     ┌─────────────────────────────┐
-                    │   어휘 3종 세트 (25,193개)    │
-                    │  vocab.rs + vocab_extended   │
-                    │  .rs + vocab_large.rs        │
+                    │   어휘 4종 세트 (25,193개)    │
+                    │  vocab + vocab_extended +    │
+                    │  vocab_large + vocab_gapfill │
                     └───────────────┬───────────────┘
                                     │ build_from_pairs()
                                     ▼
@@ -36,9 +37,10 @@
                     │   └─ 실패 시 자모 분해 fallback│
                     └───────┬───────────────┬───────┘
                             │               │
-              ┌─────────────┘               └─────────────┐
-              ▼                                            ▼
-   macOS 앱 (FFI, 25,193개 전체)              홈페이지 데모 (JS 포팅, 10개 사전만)
+                    C FFI ──┘               └── wasm-bindgen
+                            ▼                              ▼
+                     macOS 앱                      홈페이지 (WASM)
+                (crates/macos-ime)              (crates/wasm, 동일 엔진)
 ```
 
 ---
@@ -200,53 +202,76 @@ cargo test -p ime-db phonetic_decoder
 
 ## 3. 웹페이지에서 모델을 이용하는 방법 (구동·연동 메커니즘)
 
-### 3.1 요약
+### 3.1 요약 (2026-07-25부터: WASM, 더 이상 JS 손포팅 아님)
 
-홈페이지(`homepage/index.html`)의 "Try it yourself" / "sentence mode" 데모는
-**진짜 25,193개 PhoneticMap을 쓰지 않습니다.** 그 데이터를 브라우저로 보내는 건
-비현실적이라, `phonetic_decoder.rs`의 **규칙 기반 fallback 경로**
-(`hangul_char_to_hiragana_fallback` + `romaji_to_hiragana_simple`)와 **예외
-테이블**(`KNOWN_WORDS`/`KNOWN_SUFFIXES`)을 그대로 JavaScript로 손으로 포팅해서
-씁니다.
+**처음엔 `phonetic_decoder.rs`의 로직을 JavaScript로 손으로 옮겨서 썼습니다.**
+문제는 손포팅이 구조적으로 계속 어긋난다는 것 — 실제 앱은 25,193개 어휘로 학습된
+통계 맵(`PhoneticMap`)을 쓰는데 JS 버전은 그게 없어서, 예를 들어 `나니오
+타베마스카`가 실제 앱에서는 `なにお たべますか`(정답)로, JS 데모에서는 `なにお
+たへますか`(오답)로 서로 다르게 나오는 게 실측으로 확인됐습니다.
+
+그래서 **로직을 다시 옮기는 대신, 같은 Rust 엔진을 WebAssembly로 컴파일해서
+브라우저에서 그대로 돌리는 방식으로 바꿨습니다.** `crates/wasm`이 `hj_engine_init()`
+(macOS 앱)과 **완전히 동일한 어휘 4종 조합**으로 `PhoneticMap`을 만들고,
+`BeamDecoder::decode_sentence_with_kanji()`를 `wasm-bindgen`으로 노출합니다.
+인터페이스(FFI vs. WASM)만 다르고 모델은 100% 같은 코드입니다.
 
 ```
-core/crates/db/src/phonetic_decoder.rs   (Rust, 정답 소스)
-        │  사람이 손으로 동일 로직을 JS로 옮김 (자동 변환 아님)
-        ▼
-homepage/index.html <script> 안의 IIFE   (JS, 브라우저에서 실행)
+core/crates/db/src/phonetic_decoder.rs   (Rust, 유일한 정답 소스)
+        │
+        ├─▶ crates/macos-ime (C FFI)   ──▶ 다운로드 앱
+        └─▶ crates/wasm (wasm-bindgen) ──▶ homepage/wasm/*.wasm ──▶ 브라우저
 ```
 
-### 3.2 구동 메커니즘 (런타임)
+### 3.2 `crates/wasm` 구조
 
-1. 정적 HTML/CSS/JS 한 파일. 빌드 스텝도, 서버도, API 호출도 없습니다.
-2. 페이지 로드 시 즉시 실행되는 `(function () { ... })()` 블록 하나가:
-   - 자모 분해 테이블(`CHOSEONG_MAP`, `JUNGSEONG_MAP`), 로마자→히라가나 표
-     (`HIRA_TABLE`), 예외 사전(`KNOWN_WORDS`, `KNOWN_SUFFIXES`)을 정의
-   - `wire(inputId, outputId)` 함수로 두 개의 입력창을 연결:
-     - `#tryInput` → `#mockOutput` (짧은 단어 데모)
-     - `#playgroundInput` → `#playgroundOutput` (긴 문장 연습)
-   - 각 입력창의 `input` 이벤트마다 `hangulToHiragana(value)`를 호출해 실시간 렌더링
-3. `hangulToHiragana()`는 공백 기준으로 단어를 쪼갠 뒤 각 단어를
-   `convertWord()`에 넘기고, `convertWord()`는:
-   1. `KNOWN_WORDS` 정확히 일치 → 그 값 반환
-   2. `KNOWN_SUFFIXES` 중 가장 긴 것부터 접미사 매치 → 어간은 재귀 처리 + 어미는 고정값
-   3. 둘 다 아니면 글자 하나씩 `hangulCharToHiraganaFallback()`으로 분해 (자모 → 로마자 후보들 → 확률 최고값 픽)
+- `rusqlite`는 `wasm32-unknown-unknown` 타겟을 지원하지 않아서, `ime-db`에
+  `sqlite` feature를 새로 만들고(`crates/db/Cargo.toml`) SQL 의존 모듈
+  (`dictionary`/`embedding`/`sentence`/`trainer`/`ngram`/`autocomplete`,
+  `DictionaryDb`)을 `#[cfg(feature = "sqlite")]`로 감쌌습니다. `phonetic_decoder`/
+  `vocab*`/`kana_hangul`/`corpus`/`generator`는 원래도 순수 Rust라 항상 컴파일됩니다.
+  macOS 앱/CLI는 기본 feature(`sqlite` 켜짐) 그대로 빌드되어 영향 없습니다.
+- `crates/wasm/src/lib.rs`가 노출하는 함수 3개:
+  - `convert(input) -> String` — 한자 치환 포함 (홈페이지 연습장이 씀)
+  - `convert_hiragana_only(input) -> String` — 히라가나만, 실제 앱의 실시간
+    조합 텍스트(`hj_hangul_to_hiragana`)와 동일 (지금은 미사용, 필요시 활용 가능)
+  - `vocab_size() -> usize` — 학습된 고유 한글 토큰 수
+- 칸지 사전은 SQL `KanjiDict` 대신 그냥 `HashMap<String,String>`으로, **macOS
+  앱과 동일하게 어휘 4종(`vocab_large.rs` 포함) 전체**로 만듭니다 — 즉
+  `vocab_large.rs`의 데이터 품질 문제(6.3절)가 있다면 웹 데모와 앱 양쪽에 다
+  나타나고, 고치면 양쪽 다 한 번에 고쳐집니다.
+- `decode_sentence()`(기존, 앱이 씀)와 `decode_sentence_with_kanji()`(신규,
+  WASM이 씀)는 `phonetic_decoder.rs` 안에서 로직을 공유합니다 — 칸지 사전이
+  없으면(`None`) 예전과 100% 동일하게 동작.
 
-### 3.3 실제 엔진과의 차이 (정직하게)
+### 3.3 빌드 방법
 
-| | Rust 실제 엔진 | 홈페이지 JS 데모 |
-|---|---|---|
-| 어휘 규모 | 25,193개 학습 | 10개 하드코딩 |
-| 통계적 확률 결합 | O (BeamDecoder 빔서치) | X (단순 최고 확률 1개만) |
-| 조사/활용형 예외 | O | O (동일 목록 수동 동기화) |
-| 실행 위치 | 사용자 기기의 네이티브 프로세스 | 사용자 브라우저 (JS) |
+```bash
+cd core/crates/wasm
+wasm-pack build --target web --release --out-dir ../../../homepage/wasm
+```
 
-`KNOWN_WORDS`/`KNOWN_SUFFIXES`를 한쪽만 고치면 데모와 실제 앱 결과가 어긋나므로
-**항상 양쪽 다 수정**하세요:
-- `core/crates/db/src/phonetic_decoder.rs` (Rust `const` 배열)
-- `homepage/index.html` (JS 객체/배열, 같은 이름)
+- 산출물(`homepage/wasm/ime_wasm_bg.wasm` 약 956KB, gzip 약 310KB)은 **git에
+  커밋**합니다 — macOS 앱 zip과 같은 방식으로, CI에는 Rust/wasm-pack 빌드
+  스텝이 없습니다(3.4절 배포 메커니즘 그대로). `vocab_gapfill.rs` 등 소스가
+  바뀌면 이 명령으로 재빌드 후 다시 커밋해야 합니다.
+- `wasm-pack`이 기본으로 `homepage/wasm/.gitignore`(내용 `*`)를 만드는데,
+  이러면 산출물이 git에서 계속 빠지니 **지워야 합니다.**
 
-### 3.4 배포 메커니즘
+### 3.4 구동 메커니즘 (런타임)
+
+`homepage/index.html`의 `<script type="module">`이:
+```js
+import init, { convert } from './wasm/ime_wasm.js';
+await init();                 // .wasm 파일을 fetch + 인스턴스화 (한 번만)
+convert('나마에와 난데스카')   // 동기 호출, 네트워크 왕복 없음
+```
+`#playgroundInput`의 `input` 이벤트마다 `convert()`를 호출해 `#playgroundOutput`에
+렌더링합니다. 변환 자체는 서버 호출이 전혀 없고, 초기 로드 이후엔 완전히
+오프라인으로도 동작합니다 (다운로드 버튼 클릭 트래킹용 API Gateway 호출은
+완전히 별개 기능이며 무관합니다).
+
+### 3.5 배포 메커니즘
 
 ```
 git push (homepage/** 변경)

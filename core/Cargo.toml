@@ -8,6 +8,7 @@ members = [
     "crates/windows-ime",
     "crates/android-bridge",
     "crates/cli",
+    "crates/wasm",
 ]
 resolver = "2"
 
