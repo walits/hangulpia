@@ -134,9 +134,10 @@ const KNOWN_SUFFIXES: &[(&str, &str)] = &[
 ];
 ```
 
-새 예외를 추가하고 싶으면 이 두 배열에 추가 + `homepage/index.html`의 동일한
-이름의 JS 객체(`KNOWN_WORDS`/`KNOWN_SUFFIXES`)에도 **반드시 동기화**해야 합니다
-(3절 참고).
+새 예외를 추가하고 싶으면 이 두 배열에 추가하면 끝입니다. ~~JS 쪽에도 손으로
+동기화~~ — 2026-07-25 WASM 전환 이후로는 필요 없습니다. 홈페이지가 이 Rust
+코드를 컴파일한 걸 그대로 쓰기 때문에, `wasm-pack` 재빌드(3.4절)만 하면
+자동으로 반영됩니다.
 
 ---
 
@@ -244,32 +245,104 @@ core/crates/db/src/phonetic_decoder.rs   (Rust, 유일한 정답 소스)
   WASM이 씀)는 `phonetic_decoder.rs` 안에서 로직을 공유합니다 — 칸지 사전이
   없으면(`None`) 예전과 100% 동일하게 동작.
 
-### 3.3 빌드 방법
+### 3.3 어떻게 개발했는가 (진행 순서 그대로)
 
+나중에 비슷한 걸 또 만들거나 이걸 고쳐야 할 때 참고할 수 있도록, 실제로 밟은
+순서를 기록합니다.
+
+1. **문제 재현부터** — "홈페이지 연습기랑 실제 다운로드 앱이랑 성능이 같냐"는
+   질문에 감으로 답하지 않고, 실제 Rust 엔진과 JS 데모에 같은 문장을 넣어
+   직접 대조했습니다(`나니오 타베마스카` → 실제 앱은 `たべますか` 정답, JS
+   데모는 `たへますか` 오답). 이 비교 결과가 "손포팅은 구조적으로 못 고친다"는
+   결론과 WASM으로 가는 근거가 됐습니다.
+2. **인터페이스 방식 결정** — WASM vs. Lambda API 서버 두 가지를 검토. 이
+   프로젝트가 처음부터 "정적 사이트, 서버 없음, $0"을 지켜온 걸 감안해서
+   WASM으로 결정(2절 "구현 방식" 질문에서 사용자가 직접 선택).
+3. **컴파일 장애물 확인** — `ime-db`를 그냥 wasm32 타겟으로 빌드해보니
+   `rusqlite`(SQLite를 C로 번들링) 때문에 실패할 게 뻔했음. 실제로 필요한 건
+   `phonetic_decoder`/`vocab*`/`kana_hangul`뿐이고 SQL 기반 모듈
+   (`dictionary`/`embedding`/`sentence`/`trainer`/`ngram`/`autocomplete`)은
+   전혀 안 씀 → `rusqlite`를 `sqlite` feature 뒤로 숨기는 걸로 해결
+   (`crates/db/Cargo.toml`, `lib.rs`에 `#[cfg(feature = "sqlite")]` 도배).
+   `cargo build -p ime-db --no-default-features`로 sqlite 없이도 빌드되는지
+   먼저 확인하고, `cargo test -p ime-db`(기본 feature, sqlite 켜짐)로 기존
+   111개 테스트가 안 깨지는지 확인한 다음에야 다음 단계로 넘어갔습니다.
+4. **칸지 사전 설계 — SQL 없이** — 기존 macOS 앱은 `KanjiDict`(SQLite 테이블)로
+   칸지를 찾는데, wasm에선 SQL을 뺐으니 그대로 못 씁니다. 대신 어휘
+   목록(`reading`, `surface`)을 그냥 `HashMap<String,String>`으로 한 번 만들어
+   메모리에 올려두는 방식으로 대체 — 코드 몇 줄로 끝났고, macOS 앱과 완전히
+   같은 어휘(`vocab_large.rs` 포함)를 쓰기로 했습니다(6.3절 데이터 품질 이슈도
+   그래서 "둘 다 똑같이 걸리고, 고치면 둘 다 한 번에 고쳐지는" 상태로 정리).
+5. **`decode_sentence` 리팩터링** — 기존 `decode_sentence()`(앱이 씀, 칸지 없음)를
+   건드리지 않으면서 칸지 버전을 추가해야 했음. 문장을 단어로 쪼개는 루프를
+   `decode_sentence_inner(hangul, kanji: Option<&HashMap<...>>)`로 한 번만 두고,
+   `decode_sentence()`는 `None`을 넘기고 `decode_sentence_with_kanji()`는
+   `Some(...)`을 넘기는 얇은 wrapper 두 개로 분리 — 로직 중복 없이 두 API를
+   같은 함수에서 파생시켰습니다. 리팩터링 직후 `cargo test -p ime-db
+   phonetic_decoder`로 기존 11개 테스트가 그대로 통과하는지 재확인.
+6. **네이티브 빌드로 먼저 검증, 그다음 wasm32** — `cargo build -p ime-wasm`
+   (호스트 macOS 타겟)으로 크레이트 자체의 타입/로직 오류를 먼저 잡고 나서
+   `wasm-pack build`(wasm32 타겟)로 넘어갔습니다 — wasm 타겟은 빌드가 느리고
+   에러 메시지도 덜 친절해서, 순수 Rust 오류는 네이티브에서 먼저 걸러내는 게
+   빠릅니다.
+7. **실제 결과 대조로 검증** — `wasm-pack` 산출물을 Node.js로 직접 로드해서
+   (`import init, { convert } from './ime_wasm.js'` + `init({ module_or_path:
+   <파일 버퍼> })`) 실제 Rust `BeamDecoder`로 이미 확인해둔 문장들을 다시
+   돌려서 **한 글자도 안 틀리고 일치**하는지 확인. 배포 후에도
+   `https://hangulpia.com/wasm/ime_wasm.js`를 그대로 fetch해서 같은 방식으로
+   라이브 검증까지 했습니다 — "배포됐다"와 "배포된 게 맞게 동작한다"는
+   다른 확인이라는 원칙.
+8. **낡은 코드 제거** — 새 걸 넣고 옛날 걸 남겨두면 또 헷갈리므로, 손포팅
+   JS 엔진 전체(~240줄)와 `kanji-dict.js`를 완전히 삭제하고, `grep`으로
+   `hangulToHiragana`/`convertWord`/`KANJI_DICT` 등 잔재가 없는지 확인했습니다.
+
+### 3.4 어떻게 쓰는가 (개발자용)
+
+**어휘를 고친 뒤 재빌드:**
 ```bash
 cd core/crates/wasm
 wasm-pack build --target web --release --out-dir ../../../homepage/wasm
 ```
-
 - 산출물(`homepage/wasm/ime_wasm_bg.wasm` 약 956KB, gzip 약 310KB)은 **git에
   커밋**합니다 — macOS 앱 zip과 같은 방식으로, CI에는 Rust/wasm-pack 빌드
-  스텝이 없습니다(3.4절 배포 메커니즘 그대로). `vocab_gapfill.rs` 등 소스가
-  바뀌면 이 명령으로 재빌드 후 다시 커밋해야 합니다.
-- `wasm-pack`이 기본으로 `homepage/wasm/.gitignore`(내용 `*`)를 만드는데,
-  이러면 산출물이 git에서 계속 빠지니 **지워야 합니다.**
+  스텝이 없습니다(3.5절 배포 메커니즘 그대로).
+- `wasm-pack`이 기본으로 `homepage/wasm/.gitignore`(내용 `*`)를 새로 만드는데,
+  이러면 다음 빌드부터 산출물이 git에서 계속 빠지니 **매번 지워야 합니다**
+  (`rm homepage/wasm/.gitignore`).
+- 필요 도구: `rustup target add wasm32-unknown-unknown`, `cargo install
+  wasm-pack` (둘 다 이미 이 환경에 설치돼 있었음).
 
-### 3.4 구동 메커니즘 (런타임)
-
-`homepage/index.html`의 `<script type="module">`이:
-```js
-import init, { convert } from './wasm/ime_wasm.js';
-await init();                 // .wasm 파일을 fetch + 인스턴스화 (한 번만)
-convert('나마에와 난데스카')   // 동기 호출, 네트워크 왕복 없음
+**로컬(브라우저 없이 Node.js)에서 바로 테스트:**
+```bash
+cd homepage/wasm
+node --input-type=module -e "
+import init, { convert, convert_hiragana_only, vocab_size } from './ime_wasm.js';
+import { readFile } from 'node:fs/promises';
+await init({ module_or_path: await readFile('./ime_wasm_bg.wasm') });
+console.log('vocab_size:', vocab_size());
+console.log(convert('나마에와 난데스카'));
+"
 ```
-`#playgroundInput`의 `input` 이벤트마다 `convert()`를 호출해 `#playgroundOutput`에
-렌더링합니다. 변환 자체는 서버 호출이 전혀 없고, 초기 로드 이후엔 완전히
-오프라인으로도 동작합니다 (다운로드 버튼 클릭 트래킹용 API Gateway 호출은
-완전히 별개 기능이며 무관합니다).
+
+**브라우저(홈페이지)에서 쓰는 법** — `homepage/index.html` 맨 아래
+`<script type="module">`가 이미 이렇게 붙어 있습니다:
+```html
+<script type="module">
+  import init, { convert } from './wasm/ime_wasm.js';
+  await init();                    // .wasm fetch + 인스턴스화, 페이지당 한 번만
+  var result = convert('한글 문장'); // 이후로는 동기 호출, 네트워크 왕복 없음
+</script>
+```
+`convert()` 외에 `convert_hiragana_only()`(칸지 없이 히라가나만, 실제 앱의
+`hj_hangul_to_hiragana`와 동일 동작)와 `vocab_size()`도 같은 방식으로 가져다
+쓸 수 있습니다 — 지금은 `convert()`만 페이지에서 쓰고 있습니다.
+
+**Rust 엔진 자체를 고칠 때**(예: `KNOWN_SUFFIXES`에 새 조사 추가) — 이제
+`homepage/index.html`은 건드릴 필요가 **없습니다.** `phonetic_decoder.rs` 고치고
+→ `cargo test -p ime-db phonetic_decoder`로 회귀 확인 → 위 wasm-pack 명령
+재실행 → 커밋. 예전처럼 JS 쪽을 손으로 동기화하는 단계 자체가 사라졌습니다
+(1.5절의 "반드시 양쪽 다 수정" 경고는 이제 macOS 앱 vs. 홈페이지가 아니라,
+`decode_sentence()`를 쓰는 곳 전체에 자동으로 적용됨).
 
 ### 3.5 배포 메커니즘
 
