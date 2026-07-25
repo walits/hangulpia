@@ -5,7 +5,8 @@
 테이블(PhoneticMap) + 손으로 정리한 문법 예외 규칙**으로 이루어져 있습니다.
 
 - 코드 위치: `core/crates/db/src/phonetic_decoder.rs` (핵심 엔진, 유일한 정답 소스)
-- 관련 데이터: `core/crates/db/src/vocab.rs`, `vocab_extended.rs`, `vocab_large.rs`, `vocab_gapfill.rs`
+- 관련 데이터: `core/crates/db/src/vocab.rs`, `vocab_extended.rs`, `vocab_gapfill.rs`
+  (`vocab_large.rs`는 파일만 남아있고 **더 이상 안 씀** — 1.4절 참고)
 - 실사용처: macOS 앱(`core/crates/macos-ime`, C FFI), 홈페이지 데모(`core/crates/wasm` → WASM,
   **JS 손포팅 아님** — 2026-07-25부터 같은 Rust 코드가 인터페이스만 바꿔 두 곳 다 돌아감)
 
@@ -15,9 +16,9 @@
 
 ```
                     ┌─────────────────────────────┐
-                    │   어휘 4종 세트 (25,193개)    │
+                    │   어휘 3종 세트 (1,721개)     │
                     │  vocab + vocab_extended +    │
-                    │  vocab_large + vocab_gapfill │
+                    │  vocab_gapfill (전부 검증됨)  │
                     └───────────────┬───────────────┘
                                     │ build_from_pairs()
                                     ▼
@@ -93,21 +94,32 @@ cargo run -p ime-cli --bin hj-ime -- db-build-large my-model.db --count 100000
 `db-build-large`는 `generator.rs`의 템플릿 기반으로 **합성 문장**을 생성해 학습
 쌍을 만듭니다 (실제 위키피디아 원문이 아님 — 1.4절 참고).
 
-### 1.4 어휘 소스 4종 (2026-07-25 기준, v0.1.4)
+### 1.4 어휘 소스 3종 (2026-07-25 기준, v0.1.6)
 
 | 소스 | 함수 | 항목 수 | 성격 |
 |---|---|---|---|
 | `vocab.rs` | `build_vocab()` | 731 | 손으로 큐레이션한 인사말/가족/기초 단어 |
 | `vocab_extended.rs` | `build_extended_vocab()` | 711 | 확장 어휘 |
-| `vocab_large.rs` | `build_vocab_large()` | 22,741 | `gen_vocab_large.py`로 자동 생성 (스크립트 자체는 저장소에 없음) |
-| `vocab_gapfill.rs` | `build_gapfill_vocab()` | 279 | v0.1.4에서 추가. 상용 단어 표본 감사로 찾은 공백 보강 (의문사 전체, 숫자, 신체, 색깔, 감정, 형용사, 동사, 인사말 등) |
-| **합계** | 위 4개 `.extend()` | **25,193** | v0.1.4부터 실제 앱이 이걸 사용 (v0.1.3까지는 gapfill 제외 24,914개) |
+| `vocab_gapfill.rs` | `build_gapfill_vocab()` | 279 | 상용 단어 표본 감사로 찾은 공백 보강 (의문사 전체, 숫자, 신체, 색깔, 감정, 형용사, 동사, 인사말 등) |
+| **합계** | 위 3개 `.extend()` | **1,721** | v0.1.6부터 실제 앱 + 홈페이지 둘 다 이걸 사용, 전부 검증된 실제 단어 |
 
-**연혁**: v0.1.3에서 731→24,914개로 확장(1.4절 이전 판, `build_vocab_large()` 반영)
-→ v0.1.4에서 "당신의 이름은 무엇입니까"의 "이름"(名前/なまえ)이 아예 사전에
-없다는 게 발견되어 감사 후 279개를 추가로 채움(25,193개). 감사 방법: N5~N3
-수준 상용 단어 약 150개를 표본으로 뽑아 대조 → 49개 확실한 공백 확인 → 카테고리를
-넓혀 최종 279개로 확장.
+`vocab_large.rs`(22,741개)는 파일은 남아있지만 **더 이상 어디서도 안 씁니다**
+(1.4절 함정 문단 아래에서 이유 설명).
+
+**연혁**:
+- v0.1.3에서 731→24,914개로 확장 (`build_vocab_large()` 도입)
+- v0.1.4에서 "당신의 이름은 무엇입니까"의 "이름"(名前/なまえ)이 사전에 아예
+  없다는 게 발견되어 감사 후 279개 추가(25,193개). 감사 방법: N5~N3 수준
+  상용 단어 약 150개를 표본으로 뽑아 대조 → 49개 확실한 공백 확인 → 카테고리를
+  넓혀 최종 279개로 확장.
+- **v0.1.6에서 `vocab_large.rs`를 완전히 제거.** 통계 분석 결과, 그 22,741개
+  중 2글자 단어 18,400개(81%)가 어간 한자 약 340개 × 어미 한자 약 20개의
+  거의 완전한 카테시안 곱으로 기계 생성된 것으로 확인됨 — 예를 들어 어미
+  食는 서로 다른 340여 개 어간과 전부 결합되어 있었는데, 실제 사전이라면
+  있을 수 없는 패턴입니다(読学·置学처럼 존재하지 않는 단어가 다수). 이게
+  macOS 앱 후보창과 홈페이지 칸지 사전 양쪽에 가짜 후보로 노출되고 있었음.
+  제거 후 `PhoneticMap` 학습 토큰은 258→233개로 소폭만 줄고, 토큰당 평균
+  모호성은 1.5→1.2로 오히려 개선됨 (노이즈 제거 효과).
 
 **⚠️ 중요한 함정 (직접 검증됨)**: 저장소에 있던 `data/hj-ime-large.db`(2.8MB,
 CHANGELOG에 "11만 문장 위키피디아 코퍼스"로 기록됨)는 **실제 앱 초기화 경로에
@@ -150,11 +162,11 @@ use ime_db::phonetic_decoder::{PhoneticMap, BeamDecoder};
 use ime_db::kana_hangul::hiragana_to_hangul;
 use ime_db::vocab::build_vocab;
 use ime_db::vocab_extended::build_extended_vocab;
-use ime_db::vocab_large::build_vocab_large;
+use ime_db::vocab_gapfill::build_gapfill_vocab;
 
 let mut vocab = build_vocab();
 vocab.extend(build_extended_vocab());
-vocab.extend(build_vocab_large());
+vocab.extend(build_gapfill_vocab());
 
 let pairs: Vec<(String, String, u64)> = vocab.iter()
     .map(|v| (v.reading.to_string(), hiragana_to_hangul(v.reading), 100u64))
@@ -206,7 +218,7 @@ cargo test -p ime-db phonetic_decoder
 ### 3.1 요약 (2026-07-25부터: WASM, 더 이상 JS 손포팅 아님)
 
 **처음엔 `phonetic_decoder.rs`의 로직을 JavaScript로 손으로 옮겨서 썼습니다.**
-문제는 손포팅이 구조적으로 계속 어긋난다는 것 — 실제 앱은 25,193개 어휘로 학습된
+문제는 손포팅이 구조적으로 계속 어긋난다는 것 — 실제 앱은 학습된
 통계 맵(`PhoneticMap`)을 쓰는데 JS 버전은 그게 없어서, 예를 들어 `나니오
 타베마스카`가 실제 앱에서는 `なにお たべますか`(정답)로, JS 데모에서는 `なにお
 たへますか`(오답)로 서로 다르게 나오는 게 실측으로 확인됐습니다.
@@ -238,9 +250,11 @@ core/crates/db/src/phonetic_decoder.rs   (Rust, 유일한 정답 소스)
     조합 텍스트(`hj_hangul_to_hiragana`)와 동일 (지금은 미사용, 필요시 활용 가능)
   - `vocab_size() -> usize` — 학습된 고유 한글 토큰 수
 - 칸지 사전은 SQL `KanjiDict` 대신 그냥 `HashMap<String,String>`으로, **macOS
-  앱과 동일하게 어휘 4종(`vocab_large.rs` 포함) 전체**로 만듭니다 — 즉
-  `vocab_large.rs`의 데이터 품질 문제(6.3절)가 있다면 웹 데모와 앱 양쪽에 다
-  나타나고, 고치면 양쪽 다 한 번에 고쳐집니다.
+  앱과 완전히 동일한 어휘 조합**으로 만듭니다. 처음엔 `vocab_large.rs`도
+  포함해서 만들었는데, 그러면 그 데이터 품질 문제(6.3절)가 웹 데모와 앱
+  양쪽에 똑같이 나타난다는 게 오히려 장점이라 판단했었습니다 — 한쪽만
+  몰래 고쳐진 상태로 남지 않으니까요. 실제로 v0.1.6에서 `vocab_large.rs`를
+  양쪽에서 동시에 제거하면서 그 설계가 그대로 들어맞았습니다.
 - `decode_sentence()`(기존, 앱이 씀)와 `decode_sentence_with_kanji()`(신규,
   WASM이 씀)는 `phonetic_decoder.rs` 안에서 로직을 공유합니다 — 칸지 사전이
   없으면(`None`) 예전과 100% 동일하게 동작.
@@ -295,6 +309,13 @@ core/crates/db/src/phonetic_decoder.rs   (Rust, 유일한 정답 소스)
 8. **낡은 코드 제거** — 새 걸 넣고 옛날 걸 남겨두면 또 헷갈리므로, 손포팅
    JS 엔진 전체(~240줄)와 `kanji-dict.js`를 완전히 삭제하고, `grep`으로
    `hangulToHiragana`/`convertWord`/`KANJI_DICT` 등 잔재가 없는지 확인했습니다.
+9. **(이어서, 같은 날) `vocab_large.rs` 제거** — WASM으로 통합하고 나니
+   "실제 앱도 vocab_large 재필터링할까?"라는 질문이 자연스럽게 나왔고,
+   `HashMap` 통계로 어간·어미 조합 개수를 세어(3.2절) 22,741개 중 81%가
+   기계 생성 비단어라는 걸 수치로 확인한 뒤 macOS 앱(`ffi.rs`)과
+   `crates/wasm` 양쪽에서 동시에 뺐습니다 — WASM으로 통합해둔 덕분에
+   "양쪽 다 고쳐야 하나?"라는 질문 자체가 "한 군데만 고치면 끝"으로
+   바뀐 첫 실제 사례입니다. 1.4절에 상세 기록.
 
 ### 3.4 어떻게 쓰는가 (개발자용)
 
@@ -404,7 +425,7 @@ bash install.sh
 ### 4.3 구동 메커니즘 (런타임)
 
 1. **앱 시작 시** (`HJEngine.shared.initialize()` → `hj_engine_init()`):
-   - 25,193개 전체 어휘(1.4절)로 `PhoneticMap`을 **매번 새로 빌드** (파일 저장/로드 없음, 순수 in-memory)
+   - 1,721개 전체 어휘(1.4절)로 `PhoneticMap`을 **매번 새로 빌드** (파일 저장/로드 없음, 순수 in-memory)
    - 칸지 사전도 같은 어휘로 in-memory SQLite(`:memory:`)에 적재
 2. **타이핑 중** (실시간 조합 텍스트):
    - `HJInputController`가 두벌식 자모를 `hangulBuffer`에 누적
@@ -689,12 +710,15 @@ N-gram 모델은 순 +6.7%p의 개선을 제공한다. 최적 가중치 분배(�
 
 > **연결 노트**: 이 4.7절 실험은 흥미로운 대조를 이룹니다 — 이 논문에서는
 > "어휘를 23,472개로 늘렸더니 정확도가 떨어졌다"(한자 판별 단계에서),
-> 반대로 실제 배포 앱(v0.1.3→v0.1.4)에서는 "어휘를 731→25,193개로 늘려서
+> 실제 배포 앱은 v0.1.3→v0.1.4에서 반대로 "어휘를 731→25,193개로 늘려서
 > 조사/활용형 커버리지를 넓혔다"(1.4절). 모순처럼 보이지만 실은 **다른
 > 문제를 다룬 것**입니다 — 이 논문의 실험은 *한자 판별* 단계의 동음이의어
-> 문제이고, 실제 앱의 PhoneticMap 확장은 *한글→히라가나 정렬 학습 데이터*
-> 확보 목적입니다. 실제 앱은 한자 판별 자체를 라이브 타이핑 경로에서
-> 아예 안 씁니다 (6절 참고).
+> 문제이고, 당시 실제 앱의 PhoneticMap 확장은 *한글→히라가나 정렬 학습
+> 데이터* 확보 목적입니다. 실제 앱은 한자 판별 자체를 라이브 타이핑
+> 경로에서 아예 안 씁니다 (6절 참고). 다만 그 25,193개 중 대부분(정확히는
+> `vocab_large.rs`분)이 이 논문 4.7절과 결국 같은 근본 원인(기계적 조합
+> 생성 비단어)이었다는 게 나중에(v0.1.6, 1.4절) 밝혀져서, 지금은 다시
+> 1,721개로 줄어 있습니다 — 이 논문의 경고가 결국 맞았던 셈입니다.
 
 **4.8 공출현 윈도우 크기**
 
@@ -886,7 +910,7 @@ macOS 앱(v0.1.3)은 이 논문이 설명하는 시스템과 완전히 같지 �
 
 | 논문이 설명하는 구성 요소 | 코드 위치 | 실제 앱 라이브 타이핑 경로(`hj_hangul_to_hiragana`)에 연결됨? |
 |---|---|---|
-| PhoneticMap + BeamDecoder (한글→히라가나) | `phonetic_decoder.rs` | ✅ 예 — 다만 4장 실험은 **합성 코퍼스 500K 문장** 기준, 실제 앱은 **어휘 25,193개**(3.3절 규모와 다름) |
+| PhoneticMap + BeamDecoder (한글→히라가나) | `phonetic_decoder.rs` | ✅ 예 — 다만 4장 실험은 **합성 코퍼스 500K 문장** 기준, 실제 앱은 **검증된 어휘 1,721개**(1.4절 규모와 다름) |
 | 음소 임베딩(64차원 단어 벡터) | `embedding.rs` | ❌ 아니오 — 조사/활용형 예외 규칙(1.5절)으로 대체됨 |
 | 인접문장 공출현 임베딩 | `sentence.rs` (`SentenceBuffer`) | ❌ 아니오 — 라이브 타이핑은 단어 단위 처리, 문장 간 문맥 참조 없음 |
 | N-gram 언어 모델 | `ngram.rs` | ❌ 아니오 |
@@ -906,7 +930,7 @@ macOS 앱(v0.1.3)은 이 논문이 설명하는 시스템과 완전히 같지 �
 - 반면 이 문서 4.5절 "알려진 한계"와 세션 중 실제로 검증한 사례(`아나타노
   나마에와 난데스카`, `곤니찌와` 등, `phonetic_decoder.rs`의
   `test_wa_particle_is_ha_standalone_and_attached` 등 회귀 테스트로 고정됨)는
-  **실제 프로덕션 코드 경로(25,193 어휘 + BeamDecoder)를 사람이 손으로 만든
+  **실제 프로덕션 코드 경로(검증된 어휘 1,721개 + BeamDecoder)를 사람이 손으로 만든
   실제 문장에 직접 돌려서 발견한 결과**입니다. 두 수치 체계는 같은 잣대가
   아니므로 직접 비교하지 마세요.
 

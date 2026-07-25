@@ -19,7 +19,6 @@ use ime_db::phonetic_decoder::{BeamDecoder, PhoneticMap};
 use ime_db::vocab::build_vocab;
 use ime_db::vocab_extended::build_extended_vocab;
 use ime_db::vocab_gapfill::build_gapfill_vocab;
-use ime_db::vocab_large::build_vocab_large;
 use wasm_bindgen::prelude::*;
 
 struct Engine {
@@ -32,13 +31,13 @@ thread_local! {
 }
 
 fn build_engine() -> Engine {
-    // Same 4-tier combination as hj_engine_init() in crates/macos-ime/src/ffi.rs,
-    // in the same order, so this is genuinely the same model — including
-    // vocab_large.rs's known data-quality issues (see docs/MODEL.md section
-    // 6.3). Fixing that fixes both surfaces at once, by design.
+    // Same combination as hj_engine_init() in crates/macos-ime/src/ffi.rs, in
+    // the same order — genuinely the same model. vocab_large.rs is
+    // deliberately excluded on both sides: ~81% of its unique entries are
+    // mechanically generated cartesian-product kanji compounds that don't
+    // exist as real words (see docs/MODEL.md section 6.3 / ffi.rs comment).
     let mut vocab = build_vocab();
     vocab.extend(build_extended_vocab());
-    vocab.extend(build_vocab_large());
     vocab.extend(build_gapfill_vocab());
 
     let pairs: Vec<(String, String, u64)> = vocab
