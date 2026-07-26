@@ -795,15 +795,18 @@
 <script type="module">
   // The playground runs the exact same Rust engine as the downloaded macOS
   // app (compiled to WebAssembly) — not a hand-ported reimplementation.
-  // See docs/MODEL.md and core/crates/wasm.
-  import init, { convert } from './wasm/ime_wasm.js';
+  // Hiragana-only, matching the app's real-time composition text exactly:
+  // kanji substitution has no context disambiguation yet (see docs/MODEL.md
+  // 6.1) and can pick the wrong homophone, so it's kept out of the
+  // always-on live preview.
+  import init, { convert_hiragana_only } from './wasm/ime_wasm.js';
 
   var input = document.getElementById('playgroundInput');
   var output = document.getElementById('playgroundOutput');
   if (input && output) {
     var render = function () {
       var value = input.value.trim();
-      output.textContent = value ? convert(value) : '';
+      output.textContent = value ? convert_hiragana_only(value) : '';
     };
     init().then(function () {
       input.addEventListener('input', render);
