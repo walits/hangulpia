@@ -19,6 +19,7 @@ use ime_db::phonetic_decoder::{BeamDecoder, PhoneticMap};
 use ime_db::vocab::build_vocab;
 use ime_db::vocab_extended::build_extended_vocab;
 use ime_db::vocab_gapfill::build_gapfill_vocab;
+use ime_db::vocab_jlpt::build_jlpt_vocab;
 use wasm_bindgen::prelude::*;
 
 struct Engine {
@@ -39,6 +40,7 @@ fn build_engine() -> Engine {
     let mut vocab = build_vocab();
     vocab.extend(build_extended_vocab());
     vocab.extend(build_gapfill_vocab());
+    vocab.extend(build_jlpt_vocab());
 
     let pairs: Vec<(String, String, u64)> = vocab
         .iter()

@@ -1731,4 +1731,38 @@ mod tests {
         let result = decoder.decode_sentence("나마에와 난데스카");
         assert_eq!(result, "なまえは なんですか");
     }
+
+    /// Builds the exact same 4-tier vocab combination hj_engine_init()/
+    /// build_engine() use in production, then spot-checks a handful of
+    /// JLPT N5/N4/N3 words (vocab_jlpt.rs) added in v0.1.8 to confirm they
+    /// actually round-trip hangul -> hiragana correctly through the trained
+    /// PhoneticMap, not just that the vocab file compiles.
+    #[test]
+    fn test_jlpt_vocab_words_decode_correctly() {
+        let mut vocab = crate::vocab::build_vocab();
+        vocab.extend(crate::vocab_extended::build_extended_vocab());
+        vocab.extend(crate::vocab_gapfill::build_gapfill_vocab());
+        vocab.extend(crate::vocab_jlpt::build_jlpt_vocab());
+
+        let pairs: Vec<(String, String, u64)> = vocab
+            .iter()
+            .map(|v| (v.reading.to_string(), hiragana_to_hangul(v.reading), 100u64))
+            .collect();
+        let mut map = PhoneticMap::new();
+        map.build_from_pairs(&pairs);
+        let decoder = BeamDecoder::new(&map, 6, 5);
+
+        // (japanese reading, expected round-trip) for words only present via
+        // vocab_jlpt.rs. Deliberately avoids っ (sokuon): its hangul batchim
+        // encoding has a pre-existing, separate alignment bug (がっこう ->
+        // がこう) unrelated to this vocab addition — see docs/MODEL.md 4.5.
+        let cases = [
+            ("よそう", hiragana_to_hangul("よそう")),       // 予想, N4
+            ("ほしょう", hiragana_to_hangul("ほしょう")),   // 補償, N4
+            ("ふそく", hiragana_to_hangul("ふそく")),       // 不足, N3
+        ];
+        for (expected_hiragana, hangul) in cases {
+            assert_eq!(decoder.decode_sentence(&hangul), expected_hiragana);
+        }
+    }
 }
