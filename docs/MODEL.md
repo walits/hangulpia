@@ -163,6 +163,39 @@ CHANGELOG에 "11만 문장 위키피디아 코퍼스"로 기록됨)는 **실제 
 빈 파일(0바이트)로 확인됨 — git에도 추적된 적 없음(`*.db`는 `.gitignore`
 대상). 진짜 11만 문장 코퍼스 원본(191MB)도 저장소에 없습니다.
 
+#### 1.4.2 `KanjiDict` 계층 빈도 (v0.1.9)
+
+`KanjiDict` 테이블은 `UNIQUE(reading, surface)`라서 같은 읽기에 여러 표기가
+실제로 공존할 수 있습니다 — 예를 들어 `こうえん`은 어휘 전체에서 정말로
+公園(`vocab.rs`)/講演·公演(`vocab_jlpt.rs` N3)이라는 3개의 서로 다른
+표기를 갖고 있습니다(연구논문 2.3절 예시 公園/講演/公演/後援과 3개
+일치). 그런데 v0.1.8까지는 `hj_engine_init()`이 모든 항목을
+`frequency = 100`으로 동일하게 등록해서, `dict.lookup()`의
+`ORDER BY frequency DESC`가 동음이의어 사이에서는 사실상 아무 의미가
+없었습니다(전부 동점이라 SQLite 내부 순서에 맡겨짐).
+
+v0.1.9부터 `tiered_vocab_and_kanji_entries()`(`crates/macos-ime/src/ffi.rs`)가
+어휘 **출처**로 빈도를 계층화합니다:
+
+| 출처 | 빈도 | 근거 |
+|---|---|---|
+| `vocab.rs`+`vocab_extended.rs`+`vocab_gapfill.rs` | 1000 | 손으로 "기초/상용"이라고 골라 큐레이션한 어휘 |
+| `vocab_jlpt.rs` N5 | 500 | JLPT 최하위(가장 흔한) 레벨 |
+| `vocab_jlpt.rs` N4 | 300 | |
+| `vocab_jlpt.rs` N3 | 100 | JLPT 중 가장 상위(가장 덜 흔한) 레벨 |
+
+JLPT 레벨은 원래 "얼마나 자주 쓰이는 단어인가"를 기준으로 나뉜 실제
+지표이기 때문에, 학습 코퍼스 빈도를 조작해서 만든 게 아니라 근거 있는
+대체 신호입니다. こうえん으로 확인하면 이제 公園(1000)이 講演·公演(둘 다
+100, N3)보다 확실히 먼저 나옵니다 — 회귀 테스트
+`ffi::tests::test_kouen_homophones_ranked_by_tier`로 고정됨.
+
+**의도적으로 안 건드린 부분**: `PhoneticMap` 학습 시 각 (읽기, 한글) 쌍에
+주는 가중치는 여전히 전부 `100u64`로 고정입니다. 이걸 계층별로 다르게
+주면 모호한 한글→히라가나 정렬에서 어떤 후보가 이기는지가 전체적으로
+바뀔 수 있어서, 이번 칸지 랭킹 수정과는 별도로 전용 회귀 테스트를 갖춘
+작업으로 다뤄야 합니다.
+
 ### 1.5 예외 규칙 (통계로 안 잡히는 것들)
 
 `PhoneticMap`은 문자 정렬 통계라서 **문법**을 모릅니다. 조사 は(발음 wa)나
@@ -1028,7 +1061,7 @@ macOS 앱(v0.1.3)은 이 논문이 설명하는 시스템과 완전히 같지 �
 | 음소 임베딩(64차원 단어 벡터) | `embedding.rs` | ❌ 아니오 — 조사/활용형 예외 규칙(1.5절)으로 대체됨 |
 | 인접문장 공출현 임베딩 | `sentence.rs` (`SentenceBuffer`) | ❌ 아니오 — 라이브 타이핑은 단어 단위 처리, 문장 간 문맥 참조 없음 |
 | N-gram 언어 모델 | `ngram.rs` | ❌ 아니오 |
-| 한자 판별(KanjiDict + ContextRanker) | `dictionary.rs` | ⚠️ 부분적 — `hj_convert()`(후보창용)만 사용, 기본 조합 텍스트 경로(`hj_hangul_to_hiragana`)는 히라가나까지만 감 |
+| 한자 판별(KanjiDict + ContextRanker) | `dictionary.rs` | ⚠️ 부분적 — `KanjiDict`(동음이의어 후보 + v0.1.9부터 어휘 출처 기반 계층 빈도, 1.4.2절)는 `hj_convert()`(후보창용)만 사용, `ContextRanker`는 어디에도 안 씀. 기본 조합 텍스트 경로(`hj_hangul_to_hiragana`)는 히라가나까지만 감 |
 | 자동 완성 | `autocomplete.rs` | ❌ 미배선 (CLI 벤치마크에만 존재) |
 
 즉, **논문은 "만약 한자 판별까지 하는 풀 파이프라인을 붙이면 어떻게 될까"를

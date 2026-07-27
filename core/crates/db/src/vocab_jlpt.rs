@@ -16,7 +16,7 @@
 
 use crate::vocab::{Category, Pos, VocabEntry};
 
-pub fn build_jlpt_vocab() -> Vec<VocabEntry> {
+pub fn build_jlpt_n5_vocab() -> Vec<VocabEntry> {
     vec![
         // === JLPT N5 (290 new entries) ===
         VocabEntry::new("ああ", "ああ", Pos::Noun, Category::Abstract),
@@ -310,6 +310,11 @@ pub fn build_jlpt_vocab() -> Vec<VocabEntry> {
         VocabEntry::new("渡る", "わたる", Pos::Verb, Category::Abstract),
         VocabEntry::new("悪い", "わるい", Pos::IAdjective, Category::Abstract),
 
+    ]
+}
+
+pub fn build_jlpt_n4_vocab() -> Vec<VocabEntry> {
+    vec![
         // === JLPT N4 (392 new entries) ===
         VocabEntry::new("踏む", "ふむ", Pos::Verb, Category::Abstract),
         VocabEntry::new("すっと", "すっと", Pos::Noun, Category::Abstract),
@@ -704,6 +709,11 @@ pub fn build_jlpt_vocab() -> Vec<VocabEntry> {
         VocabEntry::new("家内", "かない", Pos::Noun, Category::Abstract),
         VocabEntry::new("これから", "これから", Pos::Noun, Category::Abstract),
 
+    ]
+}
+
+pub fn build_jlpt_n3_vocab() -> Vec<VocabEntry> {
+    vec![
         // === JLPT N3 (1750 new entries) ===
         VocabEntry::new("作法", "さほう", Pos::Noun, Category::Abstract),
         VocabEntry::new("様々", "さまざま", Pos::Noun, Category::Abstract),
@@ -2457,4 +2467,12 @@ pub fn build_jlpt_vocab() -> Vec<VocabEntry> {
         VocabEntry::new("枠", "わく", Pos::Noun, Category::Abstract),
 
     ]
+}
+
+/// All three levels combined, N5 first (most common) through N3.
+pub fn build_jlpt_vocab() -> Vec<VocabEntry> {
+    let mut v = build_jlpt_n5_vocab();
+    v.extend(build_jlpt_n4_vocab());
+    v.extend(build_jlpt_n3_vocab());
+    v
 }
