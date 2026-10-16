@@ -310,6 +310,12 @@
 
   footer { border-top: 1px dashed var(--line-strong); padding: 2.5rem clamp(1.25rem, 4vw, 3rem) 3rem; }
   .footer-inner { max-width: 1180px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; font-family: ui-monospace, monospace; font-size: 0.72rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ---------- research notice ---------- */
+  .rd-banner { background: var(--accent2-soft); border-bottom: 1px solid var(--accent2); color: var(--ink); font-size: 0.82rem; line-height: 1.5; padding: 0.55rem clamp(1.25rem, 4vw, 3rem); text-align: center; }
+  .rd-banner b { font-family: ui-monospace, monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent2); margin-right: 0.5rem; }
+  .rd-note { margin-top: 2rem; padding: 0.9rem 1.1rem; border: 1px dashed var(--accent2); border-radius: 14px; background: var(--accent2-soft); font-size: 0.9rem; line-height: 1.6; max-width: 46em; }
+  .rd-note b { color: var(--accent2); }
 </style>
 </head>
 <body>
@@ -332,6 +338,11 @@
     </div>
   </div>
 </header>
+
+<div class="rd-banner" role="note">
+  <b class="i18n" data-en="R&amp;D preview" data-ko="연구개발 중">R&amp;D preview</b>
+  <span class="i18n" data-en="Hangulpia is an ongoing research project. Conversion is not yet fully reliable — expect mistakes and missing words." data-ko="한글피아는 연구개발 단계의 프로젝트입니다. 변환이 아직 완전하지 않아 오류나 누락된 단어가 있을 수 있습니다.">Hangulpia is an ongoing research project. Conversion is not yet fully reliable — expect mistakes and missing words.</span>
+</div>
 
 <main id="top">
   <section class="hero">
@@ -364,7 +375,7 @@
         </div>
         <div class="status-line">
           <span class="pulse"></span>
-          <span class="i18n" data-en="Now live — 日本語 (Japanese) · 1 language and counting" data-ko="지금 가능한 언어 — 日本語(일본어) · 1개 언어 서비스 중">Now live — 日本語 (Japanese) · 1 language and counting</span>
+          <span class="i18n" data-en="Early preview — 日本語 (Japanese) · 1 language, still in R&amp;D" data-ko="초기 프리뷰 — 日本語(일본어) · 1개 언어, 연구개발 중">Early preview — 日本語 (Japanese) · 1 language, still in R&amp;D</span>
         </div>
       </div>
     </div>
@@ -468,6 +479,8 @@
             <div class="terminal-output" id="playgroundOutput"></div>
           </div>
         </div>
+
+        <p class="rd-note i18n-html" data-en-html="<b>Heads up:</b> this is a research prototype, not a finished product. It works best on common everyday words (about 4,000 in its vocabulary) and can get particles, small っ, long vowels and voiced sounds wrong. Please don't rely on it for important writing yet — feedback is very welcome." data-ko-html="<b>안내:</b> 아직 완성된 제품이 아닌 연구용 프로토타입입니다. 어휘(약 4,000개)에 있는 일상 단어에서 가장 잘 동작하며, 조사·촉음(っ)·장음·탁음은 틀릴 수 있습니다. 중요한 글쓰기에는 아직 의존하지 마시고, 피드백을 주시면 큰 도움이 됩니다."><b>Heads up:</b> this is a research prototype, not a finished product. It works best on common everyday words (about 4,000 in its vocabulary) and can get particles, small っ, long vowels and voiced sounds wrong. Please don't rely on it for important writing yet — feedback is very welcome.</p>
 
         <div class="hero-cta" style="margin-top:2.5rem">
           <a class="btn btn-primary i18n" data-en="Download for macOS" data-ko="macOS용 다운로드" href="./downloads/HangulJapaneseIME-latest.zip" data-track-download="macos">Download for macOS</a>
