@@ -316,9 +316,92 @@
   .rd-banner b { font-family: ui-monospace, monospace; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent2); margin-right: 0.5rem; }
   .rd-note { margin-top: 2rem; padding: 0.9rem 1.1rem; border: 1px dashed var(--accent2); border-radius: 14px; background: var(--accent2-soft); font-size: 0.9rem; line-height: 1.6; max-width: 46em; }
   .rd-note b { color: var(--accent2); }
+  /* ---------- Sejong's full alphabet ---------- */
+  .g { width: 1em; height: 1em; display: inline-block; vertical-align: -0.12em; color: inherit; fill: none; stroke: currentColor; stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; overflow: visible; }
+  .g.solid { fill: currentColor; stroke: none; }
+  .cg { display: inline-block; position: relative; line-height: 1; padding-bottom: 0.22em; }
+  .cg i { position: absolute; left: 50%; bottom: 0; width: 0.28em; height: 0.28em; margin-left: -0.14em; border: 0.07em solid currentColor; border-radius: 50%; }
+  .grid-frame > div { min-width: 0; }
+  .lost-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.1rem; margin-top: 2.25rem; }
+  .lost-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.4rem 1.3rem; display: flex; flex-direction: column; gap: 0.5rem; }
+  .lost-card .big { font-size: 3.4rem; line-height: 1.1; color: var(--accent); text-shadow: 0 0 22px var(--accent-soft); }
+  .lost-card h3 { font-size: 1rem; }
+  .lost-card .ipa { font-family: ui-monospace, monospace; font-size: 0.78rem; color: var(--accent2); }
+  .lost-card p { margin: 0; font-size: 0.86rem; line-height: 1.65; color: var(--ink-soft); }
+  .quote { margin: 2.25rem 0 0; padding: 1.1rem 1.3rem; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 14px 14px 0; max-width: 44em; }
+  .quote .orig { font-size: 1.15rem; font-weight: 800; letter-spacing: 0.04em; }
+  .quote .trans { margin-top: 0.4rem; font-size: 0.92rem; color: var(--ink-soft); line-height: 1.7; }
+  .quote .src { display: block; margin-top: 0.5rem; font-family: ui-monospace, monospace; font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); }
+  .combo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.2rem; margin-top: 2.25rem; }
+  .combo-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.4rem 1.4rem 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  .combo-card h3 { font-size: 1.05rem; }
+  .combo-card p { margin: 0; font-size: 0.88rem; line-height: 1.7; color: var(--ink-soft); }
+  .combo-card code, .rd-note code { font-family: ui-monospace, monospace; background: var(--surface-2); padding: 0.1rem 0.35rem; border-radius: 6px; font-size: 0.82em; }
+  .eqg { display: inline-flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+  .equation { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1.2rem; font-size: 1.7rem; font-weight: 800; line-height: 1.2; }
+  .equation .op { font-size: 1.1rem; color: var(--ink-soft); font-weight: 700; }
+  .equation .res { color: var(--accent); }
+  .equation small { font-family: ui-monospace, monospace; font-size: 0.62rem; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.05em; }
+  .origin-key { display: flex; gap: 0.6rem; flex-wrap: wrap; margin: 1.5rem 0 0; align-items: center; font-size: 0.82rem; color: var(--ink-soft); }
+  .lang-block { margin-top: clamp(2.25rem, 5vw, 3.25rem); }
+  .lang-block h3 { font-size: 1.35rem; display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
+  .lang-block h3 small { font-family: ui-monospace, monospace; font-size: 0.68rem; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .lang-block > p { margin: 0.6rem 0 1rem; color: var(--ink-soft); font-size: 0.95rem; max-width: 42em; line-height: 1.75; }
+  .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); }
+  .cmp { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 640px; }
+  .cmp th { text-align: left; font-family: ui-monospace, monospace; font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-soft); padding: 0.8rem 1rem; border-bottom: 1px solid var(--line-strong); background: var(--surface-2); }
+  .cmp td { padding: 0.8rem 1rem; border-top: 1px dashed var(--line); vertical-align: middle; line-height: 1.55; }
+  .cmp tr:first-child td { border-top: 0; }
+  .cmp .snd { font-family: ui-monospace, monospace; font-weight: 700; white-space: nowrap; }
+  .cmp .old { color: var(--ink-soft); font-size: 1.05rem; white-space: nowrap; }
+  .cmp .new { white-space: nowrap; }
+  .cmp .new .syl { font-size: 1.25rem; }
+  .cmp .new.bare { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
+  .yes, .no, .part { font-family: ui-monospace, monospace; font-size: 0.72rem; white-space: nowrap; }
+  .yes { color: var(--accent2); } .no { color: var(--accent); } .part { color: var(--ink-soft); }
+  .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.4rem; counter-reset: step; }
+  .step-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.2rem 1.25rem 1.3rem; counter-increment: step; }
+  .step-card::before { content: counter(step); display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800; font-size: 0.85rem; margin-bottom: 0.6rem; }
+  .step-card h4 { margin: 0 0 0.4rem; font-size: 0.98rem; }
+  .step-card p { margin: 0; font-size: 0.84rem; line-height: 1.7; color: var(--ink-soft); }
+  .limit-list { margin: 1.1rem 0 0; padding-left: 1.2rem; max-width: 44em; color: var(--ink-soft); font-size: 0.92rem; line-height: 1.8; }
+  .limit-list b { color: var(--ink); }
+  .cmp .why { color: var(--ink-soft); font-size: 0.82rem; min-width: 15em; }
+  .cmp .chip { margin-bottom: 0.35rem; }
+  .word-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+  .word-card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 1.15rem 1.2rem 1.3rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  .word-head { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; }
+  .word-lang { font-family: ui-monospace, monospace; font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent2); border: 1px solid var(--accent2); border-radius: 999px; padding: 0.15rem 0.5rem; }
+  .word-surface { font-size: 1.15rem; font-weight: 800; }
+  .word-gloss { font-size: 0.8rem; color: var(--ink-soft); }
+  .word-row { display: flex; align-items: center; gap: 0.7rem; }
+  .word-tag { font-family: ui-monospace, monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); width: 3.6rem; flex: none; }
+  .word-tag.ext { color: var(--accent); font-weight: 700; }
+  .word-modern { font-size: 1.35rem; color: var(--ink-soft); }
+  .word-ext { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+  .word-why { margin: 0; font-size: 0.8rem; line-height: 1.65; color: var(--ink-soft); }
+  .syl { display: inline-grid; grid-template-columns: auto auto; grid-template-areas: "i v" "f f"; align-items: center; justify-items: center; gap: 0.05rem 0.1rem; min-width: 3.1rem; padding: 0.35rem 0.45rem; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; font-size: 1.5rem; font-weight: 800; line-height: 1.1; color: var(--ink); }
+  .syl.below { grid-template-columns: auto; grid-template-areas: "i" "v" "f"; }
+  .syl .si { grid-area: i; color: var(--accent); }
+  .syl .sv { grid-area: v; }
+  .syl .sf { grid-area: f; color: var(--accent); }
+  .syl .cluster { font-size: 0.85em; letter-spacing: -0.05em; }
+  .sources { margin-top: 2.5rem; font-size: 0.8rem; color: var(--ink-soft); line-height: 1.8; }
+  .sources a { color: var(--accent2); }
+  .caveat { margin-top: 2rem; padding: 1rem 1.2rem; border: 1px dashed var(--accent); border-radius: 14px; background: var(--accent-soft); font-size: 0.9rem; line-height: 1.7; max-width: 46em; }
+  .caveat b { color: var(--accent); }
+  @media (max-width: 560px) { .syl { font-size: 1.25rem; min-width: 2.6rem; } }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="g-bansiot" viewBox="0 0 100 100"><path d="M50 16 L14 84 H86 Z"/></symbol>
+    <symbol id="g-yeorin" viewBox="0 0 100 100"><path d="M26 22 H74"/><circle cx="50" cy="62" r="26"/></symbol>
+    <symbol id="g-yetieung" viewBox="0 0 100 100"><path d="M50 8 V30"/><circle cx="50" cy="62" r="28"/></symbol>
+    <symbol id="g-araea" viewBox="0 0 100 100"><circle cx="50" cy="50" r="13" style="fill:currentColor;stroke:none"/></symbol>
+  </defs>
+</svg>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -326,6 +409,7 @@
     <div class="topbar-right">
       <nav class="primary">
         <a class="i18n" data-en="How it works" data-ko="원리" href="#principle">How it works</a>
+        <a class="i18n" data-en="Sejong" data-ko="세종" href="#sejong">Sejong</a>
         <a class="i18n" data-en="Product" data-ko="제품" href="#product">Product</a>
         <a class="i18n" data-en="Roadmap" data-ko="로드맵" href="#roadmap">Roadmap</a>
         <a class="i18n" data-en="Join us" data-ko="참여" href="#join">Join us</a>
@@ -445,9 +529,252 @@
     </div>
   </section>
 
-  <section id="product">
+  <section id="sejong">
     <div class="wrap grid-frame">
       <div class="track-label">TRACK<b>03</b></div>
+      <div>
+        <p class="i18n eyebrow" data-en="Sejong&#x27;s Full Design" data-ko="세종이 설계한 전체 체계">Sejong&#x27;s Full Design</p>
+        <h2 class="i18n" data-en="Modern Korean uses 24 letters. Sejong designed 28 — and more." data-ko="지금의 한글은 24자. 세종은 28자, 그리고 그 이상을 설계했습니다.">Modern Korean uses 24 letters. Sejong designed 28 — and more.</h2>
+        <p class="i18n lede" data-en="The 1446 Hunminjeongeum Haerye lists 28 letters: 17 consonants and 11 vowels. Four fell out of everyday Korean — three consonants (ㅿ ㆆ ㆁ) and one vowel (ㆍ). Korean didn&#x27;t need them, so they faded. But the system was never limited to Korean: it also defines ways to combine letters into sounds no single letter covers. This section shows that toolbox, and how Hangulpia proposes to use it for Japanese, Mandarin and English." data-ko="1446년의 훈민정음 해례본은 28자(자음 17 + 모음 11)를 실었습니다. 이 중 네 글자 — 자음 셋(ㅿ ㆆ ㆁ)과 모음 하나(ㆍ) — 가 한국어에서 필요가 없어져 사라졌습니다. 하지만 이 체계는 처음부터 한국어에만 갇힌 것이 아니었습니다. 글자 하나로는 안 되는 소리를 글자를 합쳐 적는 방법까지 정해 두었죠. 여기서는 그 도구상자를 소개하고, 한글피아가 이를 일본어·중국어·영어에 어떻게 쓰자고 제안하는지 보여드립니다.">The 1446 Hunminjeongeum Haerye lists 28 letters: 17 consonants and 11 vowels. Four fell out of everyday Korean — three consonants (ㅿ ㆆ ㆁ) and one vowel (ㆍ). Korean didn&#x27;t need them, so they faded. But the system was never limited to Korean: it also defines ways to combine letters into sounds no single letter covers. This section shows that toolbox, and how Hangulpia proposes to use it for Japanese, Mandarin and English.</p>
+
+        <blockquote class="quote">
+          <div class="orig" lang="zh">雖風聲鶴唳 雞鳴狗吠 皆可得而書矣</div>
+          <div class="i18n trans" data-en="&quot;Even the sound of wind, the cry of a crane, a rooster’s crow, a dog’s bark — all can be written.&quot; — Jeong In-ji, preface to the Haerye" data-ko="&quot;바람 소리, 학의 울음, 닭의 홰치는 소리, 개 짖는 소리까지도 모두 적을 수 있다.&quot; — 정인지, 해례본 서문">&quot;Even the sound of wind, the cry of a crane, a rooster’s crow, a dog’s bark — all can be written.&quot; — Jeong In-ji, preface to the Haerye</div>
+          <span class="i18n src" data-en="Source: Hunminjeongeum Haerye (1446)" data-ko="출처: 훈민정음 해례본 (1446)">Source: Hunminjeongeum Haerye (1446)</span>
+        </blockquote>
+
+        <div class="lost-grid">
+          <div class="lost-card">
+            <div class="big" aria-hidden="true"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></div>
+            <h3 class="i18n" data-en="Bansiot · 반치음" data-ko="반치음 · 반시옷">Bansiot · 반치음</h3>
+            <div class="i18n ipa" data-en="≈ [z]  (voiced ㅅ — exact value debated)" data-ko="≈ [z] 유성 ㅅ (정확한 음가는 논쟁 중)">≈ [z]  (voiced ㅅ — exact value debated)</div>
+            <p class="i18n" data-en="A voiced cousin of ㅅ. Faded out around the 1570s–80s." data-ko="ㅅ의 유성음 짝. 1570~80년대 무렵 사라짐.">A voiced cousin of ㅅ. Faded out around the 1570s–80s.</p>
+          </div>
+          <div class="lost-card">
+            <div class="big" aria-hidden="true"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆆ"><use href="#g-yeorin"/></svg></div>
+            <h3 class="i18n" data-en="Yeorinhieut · 여린히읗" data-ko="여린히읗">Yeorinhieut · 여린히읗</h3>
+            <div class="i18n ipa" data-en="[ʔ]  glottal stop" data-ko="[ʔ] 성문 폐쇄음">[ʔ]  glottal stop</div>
+            <p class="i18n" data-en="The &quot;catch&quot; in the throat before a vowel (like the pause in &quot;uh-oh&quot;). Gone by the late 1400s." data-ko="&quot;어-오&quot; 하기 전 목이 살짝 닫히는 소리. 15세기 말에 사라짐.">The &quot;catch&quot; in the throat before a vowel (like the pause in &quot;uh-oh&quot;). Gone by the late 1400s.</p>
+          </div>
+          <div class="lost-card">
+            <div class="big" aria-hidden="true"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆁ"><use href="#g-yetieung"/></svg></div>
+            <h3 class="i18n" data-en="Yetieung · 옛이응" data-ko="옛이응">Yetieung · 옛이응</h3>
+            <div class="i18n ipa" data-en="[ŋ]  &quot;ng&quot;" data-ko="[ŋ] &quot;ng&quot; 소리">[ŋ]  &quot;ng&quot;</div>
+            <p class="i18n" data-en="Used both at the start and end of a syllable. Merged into plain ㅇ by the 1600s." data-ko="음절 첫머리와 끝에 모두 쓰임. 17세기에 평범한 ㅇ에 합쳐짐.">Used both at the start and end of a syllable. Merged into plain ㅇ by the 1600s.</p>
+          </div>
+          <div class="lost-card">
+            <div class="big" aria-hidden="true"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆍ"><use href="#g-araea"/></svg></div>
+            <h3 class="i18n" data-en="Araea · 아래아 (vowel)" data-ko="아래아 (모음)">Araea · 아래아 (vowel)</h3>
+            <div class="i18n ipa" data-en="≈ [ʌ] / [ɐ]" data-ko="≈ [ʌ] / [ɐ]">≈ [ʌ] / [ɐ]</div>
+            <p class="i18n" data-en="The &quot;Sky&quot; dot from the vowel diagram above. Faded out 16th–18th c.; still alive on Jeju." data-ko="위 모음 도표의 &quot;하늘&quot; 점. 16~18세기에 사라졌고 제주도에는 아직 남아 있음.">The &quot;Sky&quot; dot from the vowel diagram above. Faded out 16th–18th c.; still alive on Jeju.</p>
+          </div>
+        </div>
+
+        <p class="i18n install-note" data-en="Note: ㅿ ㆆ ㆁ ㆍ are four letters but only three of them are consonants — the fourth, ㆍ, is a vowel." data-ko="참고: 사라진 글자는 넷이지만 자음은 셋(ㅿ ㆆ ㆁ)이고, 넷째인 ㆍ는 모음입니다.">Note: ㅿ ㆆ ㆁ ㆍ are four letters but only three of them are consonants — the fourth, ㆍ, is a vowel.</p>
+      </div>
+    </div>
+
+    <div class="wrap grid-frame" style="margin-top: clamp(3rem, 7vw, 5rem)">
+      <div class="track-label">TRACK<b>04</b></div>
+      <div>
+        <p class="i18n eyebrow" data-en="Combination Rules" data-ko="합쳐 쓰는 법">Combination Rules</p>
+        <h2 class="i18n" data-en="Letters are building blocks" data-ko="글자는 조립 부품입니다">Letters are building blocks</h2>
+        <p class="i18n lede" data-en="The Haerye does not stop at 28 shapes. It gives rules for stacking, doubling and clustering them — which is how a small alphabet reaches a very large sound space." data-ko="해례본은 28개 자형에서 끝나지 않습니다. 글자를 덧붙이고, 겹치고, 모아 쓰는 규칙을 함께 정해, 작은 문자로 아주 넓은 소리 공간에 닿도록 했습니다.">The Haerye does not stop at 28 shapes. It gives rules for stacking, doubling and clustering them — which is how a small alphabet reaches a very large sound space.</p>
+
+        <div class="combo-grid">
+          <div class="combo-card">
+            <span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span>
+            <h3 class="i18n" data-en="1 · Light sounds (연서 連書)" data-ko="1 · 가벼운 소리 (연서)">1 · Light sounds (연서 連書)</h3>
+            <div class="equation"><span class="eqg"><span>ㅂ</span><span class="op">+</span><span>ㅇ</span><span class="op">→</span><span class="res"><span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span></span></span><span class="eqg"><span>ㅍ</span><span class="op">+</span><span>ㅇ</span><span class="op">→</span><span class="res"><span class="cg" role="img" aria-label="ㆄ"><span>ㅍ</span><i></i></span></span></span></div>
+            <div class="equation"><span class="eqg"><span>ㅁ</span><span class="op">+</span><span>ㅇ</span><span class="op">→</span><span class="res"><span class="cg" role="img" aria-label="ㅱ"><span>ㅁ</span><i></i></span></span></span><span class="eqg"><span>ㄹ</span><span class="op">+</span><span>ㅇ</span><span class="op">→</span><span class="res"><span class="cg" role="img" aria-label="ᄛ (ㄹ+ㅇ)"><span>ㄹ</span><i></i></span></span></span></div>
+            <p class="i18n-html" data-en-html="Write &lt;code&gt;ㅇ&lt;/code&gt; under a lip letter and the lips only &lt;em&gt;barely&lt;/em&gt; touch: a fricative like [β] (ㅸ) instead of a full stop. Written under &lt;code&gt;ㄹ&lt;/code&gt; it gives the &quot;light tongue&quot; sound, a quick tap." data-ko-html="입술소리 글자 아래에 &lt;code&gt;ㅇ&lt;/code&gt;을 이어 쓰면 입술이 &lt;em&gt;살짝만&lt;/em&gt; 닿아 터뜨림 없는 마찰음([β] 등)이 됩니다. &lt;code&gt;ㄹ&lt;/code&gt; 아래에 쓰면 혀를 톡 치는 &quot;가벼운 혀소리&quot;가 됩니다.">Write <code>ㅇ</code> under a lip letter and the lips only <em>barely</em> touch: a fricative like [β] (ㅸ) instead of a full stop. Written under <code>ㄹ</code> it gives the "light tongue" sound, a quick tap.</p>
+            <p class="i18n" data-en="Haerye: &quot;ㅇ連書脣音之下，則為脣輕音&quot;. ㅸ is attested as [β]; the exact values of ㆄ ㅱ ㅹ and the tap value of ᄛ are scholarly interpretations." data-ko="해례본: &quot;ㅇ連書脣音之下，則為脣輕音&quot;. ㅸ은 [β]로 확인되며, ㆄ·ㅱ·ㅹ의 음가와 ᄛ의 &quot;톡 치는&quot; 해석은 학자들의 추정입니다.">Haerye: &quot;ㅇ連書脣音之下，則為脣輕音&quot;. ㅸ is attested as [β]; the exact values of ㆄ ㅱ ㅹ and the tap value of ᄛ are scholarly interpretations.</p>
+          </div>
+
+          <div class="combo-card">
+            <span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span>
+            <h3 class="i18n" data-en="2 · Doubling &amp; clusters (병서 並書)" data-ko="2 · 같이 쓰기 · 모아 쓰기 (병서)">2 · Doubling &amp; clusters (병서 並書)</h3>
+            <div class="equation"><span class="eqg"><span>ㄱ</span><span class="op">+</span><span>ㄱ</span><span class="op">→</span><span class="res">ㄲ</span></span><span class="eqg"><span>ㅎ</span><span class="op">+</span><span>ㅎ</span><span class="op">→</span><span class="res">ㆅ</span></span></div>
+            <div class="equation"><span class="eqg"><span>ㅅ</span><span class="op">+</span><span>ㄷ</span><span class="op">→</span><span class="res">ㅼ</span></span><small><span class="i18n" data-en="up to 3 letters" data-ko="최대 3자까지">up to 3 letters</span></small></div>
+            <p class="i18n" data-en="Two of the same letter make a tense/voiced-type sound. Different letters can also be written together at the start of a syllable — two or three at once — so clusters like &quot;str-&quot; fit in one block with no filler vowel." data-ko="같은 글자를 나란히 쓰면 된소리 계열이 되고, 서로 다른 글자도 음절 첫머리에 둘 또는 셋까지 모아 쓸 수 있습니다. 그래서 &quot;str-&quot; 같은 자음 연속도 ’으’ 같은 군더더기 모음 없이 한 덩어리에 담깁니다.">Two of the same letter make a tense/voiced-type sound. Different letters can also be written together at the start of a syllable — two or three at once — so clusters like &quot;str-&quot; fit in one block with no filler vowel.</p>
+            <p class="i18n" data-en="Haerye: &quot;初聲二字三字合用並書&quot;." data-ko="해례본: &quot;初聲二字三字合用並書&quot;.">Haerye: &quot;初聲二字三字合用並書&quot;.</p>
+          </div>
+
+          <div class="combo-card">
+            <span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span>
+            <h3 class="i18n" data-en="3 · Any initial can be a final (종성부용초성)" data-ko="3 · 첫소리는 끝소리로도 (종성부용초성)">3 · Any initial can be a final (종성부용초성)</h3>
+            <div class="equation"><span class="eqg"><span>가<svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></span></span><span class="eqg"><span>가<svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆆ"><use href="#g-yeorin"/></svg></span></span><span class="eqg"><span>가<span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span></span></span></div>
+            <p class="i18n" data-en="The Haerye says final consonants simply reuse the initial letters. So every new letter above can also close a syllable — which matters for Japanese small っ and for English endings like -v and -z." data-ko="해례본은 받침이 따로 없이 첫소리 글자를 그대로 다시 쓴다고 합니다. 위의 새 글자들은 전부 받침으로도 쓸 수 있고, 이는 일본어 촉음 っ나 영어의 -v, -z 같은 끝소리에 중요합니다.">The Haerye says final consonants simply reuse the initial letters. So every new letter above can also close a syllable — which matters for Japanese small っ and for English endings like -v and -z.</p>
+          </div>
+
+          <div class="combo-card">
+            <span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span>
+            <h3 class="i18n" data-en="4 · Pitch dots (방점 傍點)" data-ko="4 · 소리 높낮이 점 (방점)">4 · Pitch dots (방점 傍點)</h3>
+            <div class="equation"><span class="eqg"><span>가</span><span class="op">|</span><span>·가</span><span class="op">|</span><span>:가</span></span><small><span class="i18n" data-en="level · high · rising" data-ko="평성 · 거성 · 상성">level · high · rising</span></small></div>
+            <p class="i18n" data-en="Writing in the 1400s marked pitch with dots on the left of a syllable: none = level, one dot = high, two dots = rising. This is already a tone-marking system built into the script itself — useful for tonal languages like Mandarin." data-ko="15세기 한글은 음절 왼쪽에 점을 찍어 소리의 높낮이를 적었습니다. 점 없음=평성, 1점=거성, 2점=상성. 문자 안에 이미 성조 표기가 들어 있다는 뜻이고, 중국어 같은 성조 언어에 쓸모가 있습니다.">Writing in the 1400s marked pitch with dots on the left of a syllable: none = level, one dot = high, two dots = rising. This is already a tone-marking system built into the script itself — useful for tonal languages like Mandarin.</p>
+          </div>
+        </div>
+
+        <div class="origin-key"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span> <span class="i18n" data-en="= uses a letter or rule found in the 1446 Haerye (which sound goes where is still our proposal)" data-ko="= 1446년 해례본에 있는 글자·규칙을 사용 (어느 소리에 배정할지는 여전히 한글피아의 제안)">= uses a letter or rule found in the 1446 Haerye (which sound goes where is still our proposal)</span> &nbsp; <span class="i18n chip research" data-en="Our extension" data-ko="한글피아 확장">Our extension</span> <span class="i18n" data-en="= goes beyond the Haerye, extending its principles" data-ko="= 해례본에 없는, 원리를 확장한 아이디어">= goes beyond the Haerye, extending its principles</span></div>
+      </div>
+    </div>
+
+    <div class="wrap grid-frame" style="margin-top: clamp(3rem, 7vw, 5rem)">
+      <div class="track-label">TRACK<b>05</b></div>
+      <div>
+        <p class="i18n eyebrow" data-en="Beyond Korean" data-ko="한국어 너머로">Beyond Korean</p>
+        <h2 class="i18n" data-en="What the 24-letter version cannot write" data-ko="24자 한글로는 적을 수 없는 소리">What the 24-letter version cannot write</h2>
+        <p class="i18n lede" data-en="Today, Japanese, Mandarin and English all get squeezed through the 24 modern letters: ざ and さ collapse, r and l merge, f and p merge. Sejong’s lost letters and combination rules fit many of these gaps surprisingly well. Below is our proposed notation for each language, with every row marked as historical or as our own extension." data-ko="지금은 일본어·중국어·영어가 모두 현대 24자 한글 하나로 좁혀 적히면서 ざ와 さ가 한데 섞이고, r과 l이 합쳐지고, f와 p가 뒤섞입니다. 세종의 사라진 글자와 조합 규칙은 이 틈들을 놀라울 만큼 잘 메웁니다. 아래는 언어별 한글피아 제안 표기이며, 모든 행에 &quot;해례본에 있는 것&quot;인지 &quot;우리가 확장한 것&quot;인지 표시했습니다.">Today, Japanese, Mandarin and English all get squeezed through the 24 modern letters: ざ and さ collapse, r and l merge, f and p merge. Sejong’s lost letters and combination rules fit many of these gaps surprisingly well. Below is our proposed notation for each language, with every row marked as historical or as our own extension.</p>
+
+        <p class="caveat" role="note"><span class="i18n-html" data-en-html="&lt;b&gt;Honest status:&lt;/b&gt; this is a research proposal. The letters and combination rules are Sejong’s; the sound-to-letter assignments for Japanese, Mandarin and English are &lt;em&gt;our&lt;/em&gt; design, to be tested with linguists and native speakers. &lt;b&gt;The downloadable app and the converter below do not use these letters yet&lt;/b&gt; — they still output ordinary hiragana from the 24 modern letters." data-ko-html="&lt;b&gt;현재 상태:&lt;/b&gt; 연구 제안 단계입니다. 글자와 조합 규칙은 세종의 것이지만, 일본어·중국어·영어의 소리를 어느 글자에 배정할지는 &lt;em&gt;한글피아의 설계&lt;/em&gt;이며 언어학자와 원어민의 검증이 필요합니다. &lt;b&gt;다운로드 앱과 아래의 변환기는 아직 이 글자들을 쓰지 않고&lt;/b&gt;, 현대 24자로 입력받아 평범한 히라가나를 출력합니다."><b>Honest status:</b> this is a research proposal. The letters and combination rules are Sejong’s; the sound-to-letter assignments for Japanese, Mandarin and English are <em>our</em> design, to be tested with linguists and native speakers. <b>The downloadable app and the converter below do not use these letters yet</b> — they still output ordinary hiragana from the 24 modern letters.</span></p>
+
+        <div class="lang-block">
+          <h3>日本語 <small>Japanese</small></h3>
+          <p class="i18n" data-en="Japanese has several sounds that modern Hangul can only guess at. Most of them match a lost letter or a light-sound combination very closely." data-ko="일본어에는 현대 한글이 어림짐작으로만 적던 소리가 여럿 있고, 대부분이 사라진 글자나 가벼운 소리 조합과 매우 가깝게 맞아떨어집니다.">Japanese has several sounds that modern Hangul can only guess at. Most of them match a lost letter or a light-sound combination very closely.</p>
+          <div class="table-scroll"><table class="cmp">
+            <thead><tr><th><span class="i18n" data-en="Sound" data-ko="소리">Sound</span></th><th><span class="i18n" data-en="Today" data-ko="지금">Today</span></th><th><span class="i18n" data-en="Sejong-style" data-ko="세종식">Sejong-style</span></th><th><span class="i18n" data-en="Why" data-ko="근거">Why</span></th></tr></thead>
+            <tbody>
+              <tr><td class="snd">ざ行 z</td><td class="old">사 / 자</td><td class="new"><span class="syl"><span class="si"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></span><span class="sv">ㅏ</span></span></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="ㅿ is the voiced partner of ㅅ — exactly what ざ is to さ. Could replace the ^ marker." data-ko="ㅿ은 ㅅ의 유성 짝으로, さ에 대한 ざ와 정확히 같은 관계. 현재 ^ 마커를 대체할 수 있음.">ㅿ is the voiced partner of ㅅ — exactly what ざ is to さ. Could replace the ^ marker.</span></td></tr>
+              <tr><td class="snd">っ</td><td class="old">갓코우 (ㅅ, ㄱ, ㅂ …)</td><td class="new"><span class="syl"><span class="si">ㅇ</span><span class="sv">ㅏ</span><span class="sf"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆆ"><use href="#g-yeorin"/></svg></span></span></td><td class="why"><span class="i18n chip research" data-en="Our extension" data-ko="한글피아 확장">Our extension</span><br><span class="i18n" data-en="ㆆ as a final: the throat shuts for one beat. One fixed letter instead of guessing a different final each time." data-ko="ㆆ을 받침으로: 목이 한 박자 닫힘. 매번 받침을 다르게 짐작하는 대신 한 글자로 고정.">ㆆ as a final: the throat shuts for one beat. One fixed letter instead of guessing a different final each time.</span></td></tr>
+              <tr><td class="snd">ら行 r [ɾ]</td><td class="old">라 (l과 구분 불가)</td><td class="new"><span class="syl"><span class="si"><span class="cg" role="img" aria-label="ᄛ (ㄹ+ㅇ)"><span>ㄹ</span><i></i></span></span><span class="sv">ㅏ</span></span></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="The Japanese r is a quick tongue tap — the &quot;light tongue&quot; sound." data-ko="일본어 r은 혀를 톡 치는 소리 — 곧 &quot;가벼운 혀소리&quot;.">The Japanese r is a quick tongue tap — the &quot;light tongue&quot; sound.</span></td></tr>
+              <tr><td class="snd">ふ [ɸu]</td><td class="old">후 (h)</td><td class="new"><span class="syl below"><span class="si"><span class="cg" role="img" aria-label="ㆄ"><span>ㅍ</span><i></i></span></span><span class="sv">ㅜ</span></span></td><td class="why"><span class="i18n chip research" data-en="Our extension" data-ko="한글피아 확장">Our extension</span><br><span class="i18n" data-en="Lips close only lightly, as in ㅍ + ㅇ. Value of ㆄ is an interpretation." data-ko="ㅍ+ㅇ처럼 입술이 가볍게만 닿는 소리. ㆄ의 음가는 해석에 따름.">Lips close only lightly, as in ㅍ + ㅇ. Value of ㆄ is an interpretation.</span></td></tr>
+              <tr><td class="snd">が(鼻濁音) [ŋ]</td><td class="old">가 (g와 구분 불가)</td><td class="new"><span class="syl"><span class="si"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆁ"><use href="#g-yetieung"/></svg></span><span class="sv">ㅏ</span></span></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="Tokyo-style nasal が mid-word. ㆁ is literally [ŋ]." data-ko="도쿄식 어중 비음 が. ㆁ은 말 그대로 [ŋ].">Tokyo-style nasal が mid-word. ㆁ is literally [ŋ].</span></td></tr>
+              <tr><td class="snd">ヴ [vu]</td><td class="old">부</td><td class="new"><span class="syl below"><span class="si"><span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span></span><span class="sv">ㅜ</span></span></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="ㅸ ([β]) is the nearest historical letter to v." data-ko="ㅸ([β])이 v에 가장 가까운 옛 글자.">ㅸ ([β]) is the nearest historical letter to v.</span></td></tr>
+            </tbody>
+          </table></div>
+          <div class="word-grid">
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">JA</span><span class="word-surface">雑誌</span><span class="i18n word-gloss" data-en="magazine" data-ko="잡지">magazine</span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">잣시</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl"><span class="si"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></span><span class="sv">ㅏ</span><span class="sf"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆆ"><use href="#g-yeorin"/></svg></span></span><span class="syl"><span class="si">ㅅ</span><span class="sv">ㅣ</span></span></span></div>
+            <p class="i18n word-why" data-en="ざ = ㅿ, っ = ㆆ — two decisions that today are a coin flip." data-ko="ざ = ㅿ, っ = ㆆ — 지금은 동전 던지기처럼 짐작해야 하는 두 곳이 고정됩니다.">ざ = ㅿ, っ = ㆆ — two decisions that today are a coin flip.</p>
+          </div>
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">JA</span><span class="word-surface">鏡</span><span class="i18n word-gloss" data-en="mirror" data-ko="거울">mirror</span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">카가미</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl"><span class="si">ㅋ</span><span class="sv">ㅏ</span></span><span class="syl"><span class="si"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆁ"><use href="#g-yetieung"/></svg></span><span class="sv">ㅏ</span></span><span class="syl"><span class="si">ㅁ</span><span class="sv">ㅣ</span></span></span></div>
+            <p class="i18n word-why" data-en="Mid-word が as nasal [ŋ] (Tokyo speech), kept apart from hard g." data-ko="어중의 が를 비음 [ŋ]으로 적어, 센 g와 구분됩니다.">Mid-word が as nasal [ŋ] (Tokyo speech), kept apart from hard g.</p>
+          </div>
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">JA</span><span class="word-surface">ラーメン</span><span class="i18n word-gloss" data-en="ramen" data-ko="라멘">ramen</span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">라멘</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl"><span class="si"><span class="cg" role="img" aria-label="ᄛ (ㄹ+ㅇ)"><span>ㄹ</span><i></i></span></span><span class="sv">ㅏ</span></span><span class="syl"><span class="si">ㅁ</span><span class="sv">ㅔ</span><span class="sf">ㄴ</span></span></span></div>
+            <p class="i18n word-why" data-en="The r of ラ is a tap (ᄛ), not an l. (The long vowel ー still uses the ~ marker.)" data-ko="ラ의 r은 l이 아니라 톡 치는 소리(ᄛ). 장음 ー은 기존 ~ 마커를 씁니다.">The r of ラ is a tap (ᄛ), not an l. (The long vowel ー still uses the ~ marker.)</p>
+          </div>
+          </div>
+        </div>
+
+        <div class="lang-block">
+          <h3>中文 <small>Mandarin</small></h3>
+          <p class="i18n" data-en="Sejong’s era cared a lot about Chinese: the Haerye’s sister works were about standardizing Chinese-character readings, and tone dots were built in. That history makes Mandarin the most &quot;on-purpose&quot; fit." data-ko="세종 시대는 중국어 발음에 큰 관심을 두었습니다. 한자 독음을 정리하는 작업이 이어졌고 성조 점도 문자에 들어 있었죠. 그래서 중국어는 가장 &quot;의도에 맞는&quot; 적용처입니다.">Sejong’s era cared a lot about Chinese: the Haerye’s sister works were about standardizing Chinese-character readings, and tone dots were built in. That history makes Mandarin the most &quot;on-purpose&quot; fit.</p>
+          <div class="table-scroll"><table class="cmp">
+            <thead><tr><th><span class="i18n" data-en="Sound" data-ko="소리">Sound</span></th><th><span class="i18n" data-en="Today" data-ko="지금">Today</span></th><th><span class="i18n" data-en="Sejong-style" data-ko="세종식">Sejong-style</span></th><th><span class="i18n" data-en="Why" data-ko="근거">Why</span></th></tr></thead>
+            <tbody>
+              <tr><td class="snd">r (日 rì) [ʐ]</td><td class="old">르 / 리</td><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="Voiced fricative; the lost ㅿ is the voiced ㅅ-type letter. Value of ㅿ itself is debated." data-ko="유성 마찰음 — 사라진 ㅿ이 바로 유성 ㅅ 계열 글자. 다만 ㅿ 자체의 음가는 논쟁 중.">Voiced fricative; the lost ㅿ is the voiced ㅅ-type letter. Value of ㅿ itself is debated.</span></td></tr>
+              <tr><td class="snd">ü [y]</td><td class="old">위 / 유</td><td class="new bare">ㅟ</td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="Standard Korean already counts ㅟ as the single vowel [y]; no new letter needed." data-ko="표준 발음법이 ㅟ를 단모음 [y]로 인정하므로 새 글자 불필요.">Standard Korean already counts ㅟ as the single vowel [y]; no new letter needed.</span></td></tr>
+              <tr><td class="snd">z c s / zh ch sh</td><td class="old">즈 츠 스 / 즈 츠 스 (같아짐)</td><td class="new bare">—</td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="The Haerye tradition separates &quot;dental&quot; and &quot;palatal&quot; sibilant series for Chinese. Showing them needs the original letter shapes, which we are still collecting." data-ko="해례 계통에는 중국어용으로 치두음·정치음 두 계열을 구분하는 지침이 있음. 표기하려면 원형 자형 자료가 필요해 수집 중.">The Haerye tradition separates &quot;dental&quot; and &quot;palatal&quot; sibilant series for Chinese. Showing them needs the original letter shapes, which we are still collecting.</span></td></tr>
+              <tr><td class="snd">4 tones</td><td class="old">(표기 없음)</td><td class="new bare">·가 :가</td><td class="why"><span class="i18n chip research" data-en="Our extension" data-ko="한글피아 확장">Our extension</span><br><span class="i18n" data-en="Reuse the pitch dots (방점). Mandarin has four tones against the old three marks, so the exact mapping is an open research task." data-ko="방점을 재활용. 옛 표기는 3종, 중국어 성조는 4종이라 정확한 대응은 연구 과제로 남음.">Reuse the pitch dots (방점). Mandarin has four tones against the old three marks, so the exact mapping is an open research task.</span></td></tr>
+            </tbody>
+          </table></div>
+        </div>
+
+        <div class="lang-block">
+          <h3>English</h3>
+          <p class="i18n" data-en="English is the hardest test: it has sounds Hangul never needed (f, v, z, th) and loves consonant clusters. The toolbox covers more than you might expect." data-ko="영어는 가장 어려운 시험입니다. 한글에 필요 없었던 소리(f, v, z, th)가 있고 자음 연속도 많습니다. 그래도 도구상자가 의외로 많은 부분을 덮습니다.">English is the hardest test: it has sounds Hangul never needed (f, v, z, th) and loves consonant clusters. The toolbox covers more than you might expect.</p>
+          <div class="table-scroll"><table class="cmp">
+            <thead><tr><th><span class="i18n" data-en="Sound" data-ko="소리">Sound</span></th><th><span class="i18n" data-en="Today" data-ko="지금">Today</span></th><th><span class="i18n" data-en="Sejong-style" data-ko="세종식">Sejong-style</span></th><th><span class="i18n" data-en="Why" data-ko="근거">Why</span></th></tr></thead>
+            <tbody>
+              <tr><td class="snd">f</td><td class="old">프 (p와 같아짐)</td><td class="new bare"><span class="cg" role="img" aria-label="ㆄ"><span>ㅍ</span><i></i></span></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="Light labial from ㅍ." data-ko="ㅍ에서 나온 순경음.">Light labial from ㅍ.</span></td></tr>
+              <tr><td class="snd">v</td><td class="old">브 (b와 같아짐)</td><td class="new bare"><span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="Light labial from ㅂ, [β]." data-ko="ㅂ에서 나온 순경음 [β].">Light labial from ㅂ, [β].</span></td></tr>
+              <tr><td class="snd">z</td><td class="old">즈 (j와 같아짐)</td><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="Voiced ㅅ." data-ko="유성 ㅅ.">Voiced ㅅ.</span></td></tr>
+              <tr><td class="snd">r / l</td><td class="old">ㄹ 하나</td><td class="new bare"><span class="cg" role="img" aria-label="ᄛ (ㄹ+ㅇ)"><span>ㄹ</span><i></i></span> / ㄹ</td><td class="why"><span class="i18n chip research" data-en="Our extension" data-ko="한글피아 확장">Our extension</span><br><span class="i18n" data-en="English r is not a tap, but ᄛ is closer to r than ㄹ is. A pragmatic split." data-ko="영어 r은 톡 치는 소리가 아니지만 ᄛ이 ㄹ보다는 r에 가까움. 실용적 구분.">English r is not a tap, but ᄛ is closer to r than ㄹ is. A pragmatic split.</span></td></tr>
+              <tr><td class="snd">ʌ (cup, love)</td><td class="old">어 / 아</td><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆍ"><use href="#g-araea"/></svg></td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="ㆍ is commonly given as [ʌ]." data-ko="ㆍ의 통상적 음가가 [ʌ].">ㆍ is commonly given as [ʌ].</span></td></tr>
+              <tr><td class="snd">θ / ð (th)</td><td class="old">쓰 / 드</td><td class="new bare"><span class="cg" role="img" aria-label="ㅌ+ㅇ"><span>ㅌ</span><i></i></span> / <span class="cg" role="img" aria-label="ㄷ+ㅇ"><span>ㄷ</span><i></i></span></td><td class="why"><span class="i18n chip research" data-en="Haerye principle, new letter" data-ko="해례 원리 · 새 글자">Haerye principle, new letter</span><br><span class="i18n" data-en="Extends the &quot;ㅇ underneath = lighter&quot; rule from lips to tongue. Not in the Haerye — pure extrapolation." data-ko="&quot;ㅇ을 아래에 = 가벼워짐&quot; 규칙을 입술에서 혀로 확장. 해례본에는 없는 순수한 확장.">Extends the &quot;ㅇ underneath = lighter&quot; rule from lips to tongue. Not in the Haerye — pure extrapolation.</span></td></tr>
+              <tr><td class="snd">str- spr- skr-</td><td class="old">스트- (음절 +1)</td><td class="new bare">ㅅㅌㄹ</td><td class="why"><span class="i18n chip live" data-en="Haerye letter/rule" data-ko="해례본 글자·규칙">Haerye letter/rule</span><br><span class="i18n" data-en="2–3 letters in one initial cluster. No filler 으." data-ko="첫소리 2~3자 병서. 군더더기 으 없음.">2–3 letters in one initial cluster. No filler 으.</span></td></tr>
+              <tr><td class="snd">ʒ (vision)</td><td class="old">지</td><td class="new bare">?</td><td class="why"><span class="i18n" data-en="Open problem: no good candidate yet." data-ko="아직 풀지 못한 문제: 마땅한 후보가 없음.">Open problem: no good candidate yet.</span></td></tr>
+            </tbody>
+          </table></div>
+          <div class="word-grid">
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">EN</span><span class="word-surface">very</span><span class="i18n word-gloss" data-en="" data-ko="매우"></span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">베리</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl"><span class="si"><span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span></span><span class="sv">ㅔ</span></span><span class="syl"><span class="si"><span class="cg" role="img" aria-label="ᄛ (ㄹ+ㅇ)"><span>ㄹ</span><i></i></span></span><span class="sv">ㅣ</span></span></span></div>
+            <p class="i18n word-why" data-en="v and r each get their own letter, so very ≠ bery ≠ vely." data-ko="v와 r이 각자 글자를 가져서 very가 bery·vely와 구분됩니다.">v and r each get their own letter, so very ≠ bery ≠ vely.</p>
+          </div>
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">EN</span><span class="word-surface">fish</span><span class="i18n word-gloss" data-en="" data-ko="물고기"></span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">피쉬</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl"><span class="si"><span class="cg" role="img" aria-label="ㆄ"><span>ㅍ</span><i></i></span></span><span class="sv">ㅣ</span></span><span class="syl"><span class="si">ㅅ</span><span class="sv">ㅣ</span></span></span></div>
+            <p class="i18n word-why" data-en="f is no longer p." data-ko="f가 더 이상 p로 뭉개지지 않습니다.">f is no longer p.</p>
+          </div>
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">EN</span><span class="word-surface">love</span><span class="i18n word-gloss" data-en="" data-ko="사랑"></span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">러브</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl below"><span class="si">ㄹ</span><span class="sv"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆍ"><use href="#g-araea"/></svg></span><span class="sf"><span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span></span></span></span></div>
+            <p class="i18n word-why" data-en="One syllable: ㆍ for [ʌ], ㅸ as the final v. Today: 러브, two syllables with a filler 으." data-ko="한 음절로: [ʌ]는 ㆍ, 끝소리 v는 ㅸ 받침. 지금은 &quot;러브&quot; 두 음절에 군더더기 으가 붙습니다.">One syllable: ㆍ for [ʌ], ㅸ as the final v. Today: 러브, two syllables with a filler 으.</p>
+          </div>
+          <div class="word-card">
+            <div class="word-head"><span class="word-lang">EN</span><span class="word-surface">strike</span><span class="i18n word-gloss" data-en="" data-ko="치다"></span></div>
+            <div class="word-row"><span class="word-tag"><span class="i18n" data-en="Today" data-ko="지금">Today</span></span><span class="word-modern">스트라이크</span></div>
+            <div class="word-row"><span class="word-tag ext"><span class="i18n" data-en="Sejong" data-ko="세종">Sejong</span></span><span class="word-ext"><span class="syl"><span class="si"><span class="cluster">ㅅㅌㄹ</span></span><span class="sv">ㅏ</span></span><span class="syl"><span class="si">ㅇ</span><span class="sv">ㅣ</span><span class="sf">ㅋ</span></span></span></div>
+            <p class="i18n word-why" data-en="Three consonants in one initial cluster — two syllables instead of five." data-ko="세 자음을 첫소리 한 덩어리에 — 5음절 대신 2음절.">Three consonants in one initial cluster — two syllables instead of five.</p>
+          </div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="wrap grid-frame" style="margin-top: clamp(3rem, 7vw, 5rem)">
+      <div class="track-label">TRACK<b>06</b></div>
+      <div>
+        <p class="i18n eyebrow" data-en="Can you type it today?" data-ko="지금 입력할 수 있을까?">Can you type it today?</p>
+        <h2 class="i18n" data-en="The letters exist. The keyboard does not." data-ko="글자는 있습니다. 자판이 없습니다.">The letters exist. The keyboard does not.</h2>
+        <p class="i18n lede" data-en="Good news: Unicode already encodes almost every letter above, so nothing new has to be standardized for most of them. Bad news: a standard Korean keyboard has no key for any of them, and the Hangulpia app cannot produce them yet." data-ko="좋은 소식은 위 글자 대부분이 이미 유니코드에 들어 있어서 새로 표준화할 것이 거의 없다는 점입니다. 나쁜 소식은 표준 한글 자판에 이 글자들의 글쇠가 하나도 없고, 한글피아 앱도 아직 만들어내지 못한다는 점입니다.">Good news: Unicode already encodes almost every letter above, so nothing new has to be standardized for most of them. Bad news: a standard Korean keyboard has no key for any of them, and the Hangulpia app cannot produce them yet.</p>
+
+        <div class="table-scroll" style="margin-top:2rem"><table class="cmp">
+          <thead><tr><th><span class="i18n" data-en="Letter" data-ko="글자">Letter</span></th><th>Unicode</th><th><span class="i18n" data-en="Standard keyboard" data-ko="표준 두벌식">Standard keyboard</span></th><th><span class="i18n" data-en="Windows &quot;MS Old Hangul&quot; keyboard*" data-ko="Windows &quot;MS 옛한글&quot; 자판*">Windows &quot;MS Old Hangul&quot; keyboard*</span></th><th><span class="i18n" data-en="Hangulpia app" data-ko="한글피아 앱">Hangulpia app</span></th><th><span class="i18n" data-en="Note" data-ko="비고">Note</span></th></tr></thead>
+          <tbody>
+              <tr><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㅿ"><use href="#g-bansiot"/></svg></td><td class="snd">U+317F</td><td><span class="no">✗</span></td><td><span class="yes">Shift + ㅅ</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="On a plain keyboard Shift+ㅅ is ㅆ — a clash if we reuse it." data-ko="일반 두벌식에서 Shift+ㅅ은 ㅆ이라, 그대로 쓰면 충돌.">On a plain keyboard Shift+ㅅ is ㅆ — a clash if we reuse it.</span></td></tr>
+              <tr><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆆ"><use href="#g-yeorin"/></svg></td><td class="snd">U+3186</td><td><span class="no">✗</span></td><td><span class="yes">Shift + ㅎ</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="" data-ko=""></span></td></tr>
+              <tr><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆁ"><use href="#g-yetieung"/></svg></td><td class="snd">U+3181</td><td><span class="no">✗</span></td><td><span class="yes">Shift + ㅇ</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="" data-ko=""></span></td></tr>
+              <tr><td class="new bare"><svg class="g" viewBox="0 0 100 100" role="img" aria-label="ㆍ"><use href="#g-araea"/></svg></td><td class="snd">U+318D</td><td><span class="no">✗</span></td><td><span class="yes">Shift + ㅏ</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="Typed as the conjoining 아래아, not always the same code as the standalone ㆍ." data-ko="조합형 아래아로 입력되며, 낱글자 ㆍ와 코드가 다를 수 있음.">Typed as the conjoining 아래아, not always the same code as the standalone ㆍ.</span></td></tr>
+              <tr><td class="new bare"><span class="cg" role="img" aria-label="ㅸ"><span>ㅂ</span><i></i></span> <span class="cg" role="img" aria-label="ㆄ"><span>ㅍ</span><i></i></span> <span class="cg" role="img" aria-label="ㅱ"><span>ㅁ</span><i></i></span> <span class="cg" role="img" aria-label="ㅹ"><span>ㅃ</span><i></i></span></td><td class="snd">U+3178 · 3184 · 3171 · 3179</td><td><span class="no">✗</span></td><td><span class="yes">ㅂ/ㅍ/ㅁ/ㅃ → ㅇ</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="Typed as a key sequence, then composed." data-ko="글쇠 순서(순경음 + ㅇ)로 입력해 조합.">Typed as a key sequence, then composed.</span></td></tr>
+              <tr><td class="new bare"><span class="cg" role="img" aria-label="ᄛ (ㄹ+ㅇ)"><span>ㄹ</span><i></i></span></td><td class="snd">U+111B</td><td><span class="no">✗</span></td><td><span class="yes">ㄹ → ㅇ</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="Exists only as a conjoining jamo." data-ko="조합용 자모로만 존재.">Exists only as a conjoining jamo.</span></td></tr>
+              <tr><td class="new bare"><span class="cg" role="img" aria-label="ㅌ+ㅇ"><span>ㅌ</span><i></i></span> <span class="cg" role="img" aria-label="ㄷ+ㅇ"><span>ㄷ</span><i></i></span></td><td class="snd">—</td><td><span class="no">✗</span></td><td><span class="no">✗</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="Our own extension: no code point exists at all." data-ko="한글피아가 제안한 확장 — 코드 포인트 자체가 없음.">Our own extension: no code point exists at all.</span></td></tr>
+              <tr><td class="new bare">·가 :가</td><td class="snd">U+302E · 302F</td><td><span class="no">✗</span></td><td><span class="part">copy &amp; paste</span></td><td><span class="no">✗</span></td><td class="why"><span class="i18n" data-en="Pitch dots are combining marks; no key." data-ko="방점은 결합 문자이며 입력 글쇠가 없음.">Pitch dots are combining marks; no key.</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="install-note"><span class="i18n" data-en="* From a community guide; not tested by us. It also reports that the keyboard only worked reliably in Firefox." data-ko="* 커뮤니티 안내문 기준이며 직접 시험하지 않았습니다. 해당 글에는 이 자판이 Firefox에서만 안정적으로 동작했다는 보고도 있습니다.">* From a community guide; not tested by us. It also reports that the keyboard only worked reliably in Firefox.</span></p>
+
+        <h3 class="i18n" data-en="Current limits" data-ko="현재의 한계" style="margin-top:2.5rem;font-size:1.25rem">Current limits</h3>
+        <ul class="limit-list">
+          <li><span class="i18n-html" data-en-html="&lt;b&gt;No default keys.&lt;/b&gt; Standard Dubeolsik has no key for ㅿ ㆆ ㆁ ㆍ or the light-sound letters. We could not confirm any built-in way to type them on macOS." data-ko-html="&lt;b&gt;기본 글쇠가 없음.&lt;/b&gt; 표준 두벌식에는 ㅿ ㆆ ㆁ ㆍ와 순경음 글자의 글쇠가 없습니다. macOS에 기본으로 입력하는 방법이 있는지는 확인하지 못했습니다."><b>No default keys.</b> Standard Dubeolsik has no key for ㅿ ㆆ ㆁ ㆍ or the light-sound letters. We could not confirm any built-in way to type them on macOS.</span></li>
+          <li><span class="i18n-html" data-en-html="&lt;b&gt;No precomposed syllables.&lt;/b&gt; Unicode precomposes only the 11,172 modern syllables. A syllable like &quot;ㅿ+ㅏ&quot; must be built from conjoining jamo, which needs a font and renderer that support it. Community reports mention broken display in some browsers." data-ko-html="&lt;b&gt;완성형 음절이 없음.&lt;/b&gt; 유니코드가 완성형으로 가진 것은 현대 음절 11,172개뿐입니다. &quot;ㅿ+ㅏ&quot; 같은 음절은 조합형 자모로 만들어야 하고, 이를 지원하는 글꼴과 렌더러가 필요합니다. 일부 브라우저에서 깨져 보인다는 보고가 있습니다."><b>No precomposed syllables.</b> Unicode precomposes only the 11,172 modern syllables. A syllable like "ㅿ+ㅏ" must be built from conjoining jamo, which needs a font and renderer that support it. Community reports mention broken display in some browsers.</span></li>
+          <li><span class="i18n-html" data-en-html="&lt;b&gt;Two kinds of jamo.&lt;/b&gt; Compatibility jamo (ㅿ U+317F, …) are standalone and do not combine into syllables; conjoining jamo combine but look different when alone." data-ko-html="&lt;b&gt;자모가 두 종류.&lt;/b&gt; 호환 자모(ㅿ U+317F 등)는 낱글자라 음절로 조합되지 않고, 조합용 자모는 조합되지만 홀로 두면 모양이 달라집니다."><b>Two kinds of jamo.</b> Compatibility jamo (ㅿ U+317F, …) are standalone and do not combine into syllables; conjoining jamo combine but look different when alone.</span></li>
+          <li><span class="i18n-html" data-en-html="&lt;b&gt;Our engine is modern-Hangul only.&lt;/b&gt; The decoder and its training table are built on the 24 modern letters, so extended letters are simply not part of what it handles today." data-ko-html="&lt;b&gt;우리 엔진은 현대 한글 전용.&lt;/b&gt; 디코더와 학습 표가 현대 24자 기준이라, 확장 글자는 지금은 처리 대상에 들어 있지 않습니다."><b>Our engine is modern-Hangul only.</b> The decoder and its training table are built on the 24 modern letters, so extended letters are simply not part of what it handles today.</span></li>
+          <li><span class="i18n-html" data-en-html="&lt;b&gt;Some proposals have no code point.&lt;/b&gt; The ㅌ+ㅇ and ㄷ+ㅇ shapes for θ and ð are our own idea and exist nowhere in Unicode." data-ko-html="&lt;b&gt;코드 포인트가 없는 제안도 있음.&lt;/b&gt; θ와 ð를 위한 ㅌ+ㅇ, ㄷ+ㅇ 자형은 한글피아의 아이디어이며 유니코드 어디에도 없습니다."><b>Some proposals have no code point.</b> The ㅌ+ㅇ and ㄷ+ㅇ shapes for θ and ð are our own idea and exist nowhere in Unicode.</span></li>
+          <li><span class="i18n-html" data-en-html="&lt;b&gt;Typing cost.&lt;/b&gt; The Windows layout leans on Shift for rare letters, and its own guide warns of frequent typos." data-ko-html="&lt;b&gt;입력 부담.&lt;/b&gt; Windows 배치는 드문 글자를 Shift에 얹는 방식이고, 안내문 스스로 오타가 잦다고 경고합니다."><b>Typing cost.</b> The Windows layout leans on Shift for rare letters, and its own guide warns of frequent typos.</span></li>
+        </ul>
+
+        <h3 class="i18n" data-en="Where we want to take it" data-ko="앞으로의 발전 방향" style="margin-top:2.5rem;font-size:1.25rem">Where we want to take it</h3>
+        <div class="step-grid">
+          <div class="step-card"><h4 class="i18n" data-en="Try it in the browser first" data-ko="먼저 브라우저에서">Try it in the browser first</h4><p class="i18n" data-en="Add an on-screen extended-jamo keypad to the homepage practice box (ㅿ ㆆ ㆁ ㆍ ㅸ ㆄ ᄛ). It needs no OS support, works on any device, and our SVG glyphs sidestep missing fonts." data-ko="홈페이지 연습장에 확장 자모 화면 자판(ㅿ ㆆ ㆁ ㆍ ㅸ ㆄ ᄛ)을 붙입니다. OS 지원이 필요 없고 어느 기기에서나 되며, SVG 글리프라 글꼴 문제도 피합니다.">Add an on-screen extended-jamo keypad to the homepage practice box (ㅿ ㆆ ㆁ ㆍ ㅸ ㆄ ᄛ). It needs no OS support, works on any device, and our SVG glyphs sidestep missing fonts.</p></div>
+          <div class="step-card"><h4 class="i18n" data-en="Make the engine read them" data-ko="엔진이 읽게 하기">Make the engine read them</h4><p class="i18n" data-en="Add deterministic rules ahead of the statistical map: ㅿ→ざ-row, final ㆆ→っ, ㆁ→nasal が, ᄛ→ら-row, ㆄ→ふ. This directly attacks today&#x27;s weakest spots (voicing, small っ) and could replace the ~ and ^ markers." data-ko="통계 표(PhoneticMap) 앞단에 결정 규칙을 둡니다: ㅿ→ざ행, 받침 ㆆ→っ, ㆁ→비음 が, ᄛ→ら행, ㆄ→ふ. 지금 가장 약한 부분(탁음·촉음)을 직접 겨냥하며, ~ ^ 마커를 대체할 수 있습니다.">Add deterministic rules ahead of the statistical map: ㅿ→ざ-row, final ㆆ→っ, ㆁ→nasal が, ᄛ→ら-row, ㆄ→ふ. This directly attacks today&#x27;s weakest spots (voicing, small っ) and could replace the ~ and ^ markers.</p></div>
+          <div class="step-card"><h4 class="i18n" data-en="A typing layer in the macOS app" data-ko="macOS 앱에 입력 층 추가">A typing layer in the macOS app</h4><p class="i18n" data-en="Reuse the familiar Windows Shift layout where it does not clash, and put the clashing ones (like Shift+ㅅ=ㅆ) on an Option layer. Output stays kana, so no font is needed for the result." data-ko="Windows의 익숙한 Shift 배치를 충돌 없는 곳에서 재사용하고, 충돌하는 것(Shift+ㅅ=ㅆ 등)은 Option 층에 둡니다. 출력은 가나라서 결과물에 글꼴 문제가 없습니다.">Reuse the familiar Windows Shift layout where it does not clash, and put the clashing ones (like Shift+ㅅ=ㅆ) on an Option layer. Output stays kana, so no font is needed for the result.</p></div>
+          <div class="step-card"><h4 class="i18n" data-en="Teach the model extended notation" data-ko="모델이 확장 표기를 배우게 하기">Teach the model extended notation</h4><p class="i18n" data-en="Extend the kana→Hangul table that generates training pairs so it can also emit the extended letters, then retrain the PhoneticMap. Ambiguity should fall because ざ/さ and ら/ラ stop sharing one Hangul spelling." data-ko="학습 쌍을 만드는 가나→한글 표를 확장 글자도 낼 수 있게 고치고 PhoneticMap을 다시 학습시킵니다. ざ/さ가 한 표기를 나눠 쓰지 않게 되므로 모호성이 줄어야 합니다.">Extend the kana→Hangul table that generates training pairs so it can also emit the extended letters, then retrain the PhoneticMap. Ambiguity should fall because ざ/さ and ら/ラ stop sharing one Hangul spelling.</p></div>
+          <div class="step-card"><h4 class="i18n" data-en="Validate &amp; standardize" data-ko="검증과 표준화">Validate &amp; standardize</h4><p class="i18n" data-en="Test the assignments with linguists and native speakers. For θ ð and other new shapes, decide between key sequences and a proposal for new code points." data-ko="언어학자·원어민과 배정안을 검증합니다. θ ð 같은 새 자형은 글쇠 순서로 풀지, 새 코드 포인트를 제안할지 정해야 합니다.">Test the assignments with linguists and native speakers. For θ ð and other new shapes, decide between key sequences and a proposal for new code points.</p></div>
+        </div>
+        <p class="sources"><span class="i18n-html sources" data-en-html="Sources &amp;amp; further reading: &lt;a href=&quot;https://ko.wikisource.org/wiki/훈민정음&quot; rel=&quot;noopener&quot;&gt;Hunminjeongeum text (Wikisource)&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Obsolete_Hangul_jamo&quot; rel=&quot;noopener&quot;&gt;Obsolete Hangul jamo&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Hunminjeongeum&quot; rel=&quot;noopener&quot;&gt;Hunminjeongeum&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo&quot; rel=&quot;noopener&quot;&gt;Hangul Compatibility Jamo&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)&quot; rel=&quot;noopener&quot;&gt;Hangul Jamo (Unicode)&lt;/a&gt; · &lt;a href=&quot;https://ko.wikisource.org/wiki/사용자:Aspere/옛한글_입력_방법&quot; rel=&quot;noopener&quot;&gt;Old Hangul typing guide (Wikisource user page)&lt;/a&gt;. Reconstructed sound values of obsolete letters are scholarly estimates, not settled facts. Typing instructions come from a community guide and have not been tested by us." data-ko-html="출처 및 더 읽을거리: &lt;a href=&quot;https://ko.wikisource.org/wiki/훈민정음&quot; rel=&quot;noopener&quot;&gt;훈민정음 원문 (위키문헌)&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Obsolete_Hangul_jamo&quot; rel=&quot;noopener&quot;&gt;Obsolete Hangul jamo&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Hunminjeongeum&quot; rel=&quot;noopener&quot;&gt;Hunminjeongeum&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo&quot; rel=&quot;noopener&quot;&gt;Hangul Compatibility Jamo&lt;/a&gt; · &lt;a href=&quot;https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)&quot; rel=&quot;noopener&quot;&gt;Hangul Jamo (유니코드)&lt;/a&gt; · &lt;a href=&quot;https://ko.wikisource.org/wiki/사용자:Aspere/옛한글_입력_방법&quot; rel=&quot;noopener&quot;&gt;옛한글 입력 방법 (위키문헌 사용자 문서)&lt;/a&gt;. 옛 글자의 음가는 학자들의 복원 추정이며 확정된 사실이 아닙니다. 입력 방법은 커뮤니티 안내문 기준이며 한글피아가 직접 시험하지는 않았습니다.">Sources &amp; further reading: <a href="https://ko.wikisource.org/wiki/훈민정음" rel="noopener">Hunminjeongeum text (Wikisource)</a> · <a href="https://en.wikipedia.org/wiki/Obsolete_Hangul_jamo" rel="noopener">Obsolete Hangul jamo</a> · <a href="https://en.wikipedia.org/wiki/Hunminjeongeum" rel="noopener">Hunminjeongeum</a> · <a href="https://en.wikipedia.org/wiki/Hangul_Compatibility_Jamo" rel="noopener">Hangul Compatibility Jamo</a> · <a href="https://en.wikipedia.org/wiki/Hangul_Jamo_(Unicode_block)" rel="noopener">Hangul Jamo (Unicode)</a> · <a href="https://ko.wikisource.org/wiki/사용자:Aspere/옛한글_입력_방법" rel="noopener">Old Hangul typing guide (Wikisource user page)</a>. Reconstructed sound values of obsolete letters are scholarly estimates, not settled facts. Typing instructions come from a community guide and have not been tested by us.</span></p>
+      </div>
+    </div>
+
+  </section>
+
+  <section id="product">
+    <div class="wrap grid-frame">
+      <div class="track-label">TRACK<b>07</b></div>
       <div>
         <p class="eyebrow i18n" data-en="Live Now" data-ko="지금, 첫 한 걸음">Live Now</p>
         <h2 class="i18n-html" style="font-size:clamp(2rem,3.6vw + 1rem,3.25rem)" data-en-html="First up: <span class=&quot;spark-text&quot;>Japanese</span>" data-ko-html="첫 언어는 <span class=&quot;spark-text&quot;>일본어</span>입니다">First up: <span class="spark-text">Japanese</span></h2>
@@ -493,7 +820,7 @@
 
   <section id="install">
     <div class="wrap grid-frame">
-      <div class="track-label">TRACK<b>04</b></div>
+      <div class="track-label">TRACK<b>08</b></div>
       <div>
         <p class="eyebrow i18n" data-en="Setup" data-ko="설치 방법">Setup</p>
         <h2 class="i18n" data-en="Up and running in 3 minutes" data-ko="3분이면 설치 끝">Up and running in 3 minutes</h2>
@@ -538,7 +865,7 @@
 
   <section id="tutorial">
     <div class="wrap grid-frame">
-      <div class="track-label">TRACK<b>05</b></div>
+      <div class="track-label">TRACK<b>09</b></div>
       <div>
         <p class="eyebrow i18n" data-en="Fine control" data-ko="세밀하게 조정하기">Fine control</p>
         <h2 class="i18n" data-en="When the engine guesses wrong, correct it" data-ko="엔진이 잘못 짐작할 때는 직접 알려주세요">When the engine guesses wrong, correct it</h2>
@@ -572,7 +899,7 @@
 
   <section id="roadmap">
     <div class="wrap grid-frame">
-      <div class="track-label">TRACK<b>06</b></div>
+      <div class="track-label">TRACK<b>10</b></div>
       <div>
         <p class="eyebrow i18n" data-en="One Script, Every Language" data-ko="한 문자, 모든 언어">One Script, Every Language</p>
         <h2 class="i18n" data-en="What's next?" data-ko="다음은 어떤 언어입니까">What's next?</h2>
